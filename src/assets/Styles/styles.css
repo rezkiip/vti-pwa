@@ -1,0 +1,267 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
+/* 
+.app-container {
+    max-width: 360px;
+    max-height: 700px;
+    margin: 0 auto;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    overflow: auto;
+
+} */
+.overflow-text {
+    white-space: normal;
+    overflow: hidden;
+    /* Hide the overflowing content */
+}
+
+.carousel-container {
+    overflow-x: auto;
+    white-space: nowrap;
+    /* Prevents the cards from wrapping to the next line */
+}
+
+.carousel-container img {
+    border-radius: 10px;
+    height: 12rem;
+}
+
+.home-card-image {
+    border-radius: 10px;
+    background-color: grey;
+    height: 200px;
+    width: 300px;
+    display: inline-block;
+}
+
+.brand-card-image {
+    border-radius: 10px;
+    background-color: grey;
+    height: 150px;
+    width: 150px;
+    display: inline-block;
+}
+
+.card-body-content {
+    width: 350px;
+    display: inline-block;
+
+}
+
+.home-card-title {
+    margin-top: 10px;
+}
+
+.card-header {
+    display: flex;
+}
+
+.card-title {
+    margin: 0;
+    padding: 10px 0px;
+    cursor: pointer;
+}
+
+.card-title.active {
+    border-bottom: 3px solid #1B9DFB;
+}
+
+.carousel-container-btn {
+    overflow-x: auto;
+    white-space: nowrap;
+    /* Prevents the cards from wrapping to the next line */
+}
+
+.button-inline-block {
+    display: inline-block;
+}
+
+.image-container {
+    width: 100%;
+    /* Set the width of the cropped area */
+    height: 100%;
+    /* Set the height of the cropped area */
+    overflow: hidden;
+    /* Hide the overflow of the image outside the container */
+    position: relative;
+    /* Position property must be set for absolute positioning */
+}
+
+.cropped-image {
+    position: absolute;
+    /* Position the image absolutely within the container */
+    top: -50px;
+    /* Adjust the left position to crop the image as needed */
+    width: 100%;
+    /* Set a width greater than the container to show the cropped part */
+    height: auto;
+    /* Maintain the aspect ratio of the image */
+}
+
+.tentang-event-arrow {
+    position: absolute;
+    left: 19.3rem;
+    bottom: 6.4rem;
+}
+
+
+.nav-form-regist-event img {
+    position: relative;
+    top: .5rem;
+    left: .5rem;
+    height: 3rem;
+}
+
+.nav-form-regist-event h5 {
+    position: relative;
+    top: 1rem;
+    left: 1rem;
+    height: 3rem;
+}
+
+.info-label {
+    position: absolute;
+    left: 7px;
+    top: 5.25rem;
+}
+
+.info-label-checkout {
+    position: absolute;
+    right: 10px;
+    top: 5.6rem;
+}
+
+.info-label-checkout2 {
+    position: absolute;
+    right: 10px;
+    top: 7.9rem;
+}
+
+.info-label-checkout3 {
+    position: absolute;
+    right: 10px;
+    top: 10.25rem;
+}
+
+.total-biaya {
+    text-align: center;
+    /* Center the content horizontally */
+    margin: 0;
+    /* Reset margins to 0 */
+    padding: 0px 0;
+    /* Add padding to create spacing */
+}
+
+.total-biaya p {
+    margin: 0;
+    /* Reset margin for the <p> tag */
+    font-size: 10px;
+    text-align: right;
+    /* Adjust font size if needed */
+}
+
+.total-biaya h4 {
+    text-align: right;
+
+    margin: 0;
+    /* Reset margin for the <h4> tag */
+    color: orangered;
+    /* font-size: 24px; */
+    /* Adjust font size if needed */
+}
+
+.total-biaya-chv svg {
+    /* background-color: red; */
+    color: #1B9DFB;
+    position: absolute;
+    top: 30px;
+    right: 10px;
+    z-index: 1;
+}
+
+.share-icon-detail213 {
+    position: absolute;
+    left: 17.5rem;
+    bottom: 4rem;
+
+}
+
+.qris {
+    background-color: white;
+}
+
+.qris-all-logo img {
+    position: absolute;
+    height: 1.5rem;
+    top: 10rem;
+    left: 2rem;
+}
+
+.gpn-logo img {
+    position: absolute;
+    height: 2rem;
+    top: 9.5rem;
+    right: 2rem;
+}
+
+.qris-element1 img {
+    position: absolute;
+    height: 10rem;
+    top: 12rem;
+}
+
+.qris-element2 img {
+    position: absolute;
+    height: 10rem;
+    top: 12rem;
+    right: 0rem;
+}
+
+.qr-code-qris img {
+    /* position: absolute; */
+    margin: 4rem 0 0 0;
+    height: 10rem;
+}
+
+.ideo-total-biaya div {
+    position: relative;
+    left: 10rem;
+    top: .5rem;
+}
+
+.nama-nmid-qris {
+    position: relative;
+    left: 7rem;
+    bottom: .8rem;
+    width: 2rem;
+    /* background-color: rebeccapurple; */
+}
+
+.logo-app-perbankan img {
+    height: 5rem;
+}
+
+.logo-perbankan-pay img {
+    border-radius: 100%;
+    height: 3rem;
+}
+
+.logo-perbankan-pay {
+    margin: 0 2rem 0 0;
+}
+
+
+.corner-up-right-lokasi img {
+    position: absolute;
+    bottom: 7rem;
+    left: 18rem;
+
+    background-color: #1B9DFB;
+    padding: 15px;
+    border-radius: 100%;
+    color: white;
+}
