@@ -1,5 +1,6 @@
 <template>
   <div class="event-insight">
+    <splash-screen v-if="isBusyAll" />
     <div class="card" style="margin-top: 5px">
       <div class="">
         <div class="card-body-content">
@@ -1347,11 +1348,14 @@ import productService from "@/service/product";
 import templateService from "@/service/template";
 import IMask from "imask";
 import Vue from "vue";
+import SplashScreen from "../components/SplashScreen.vue";
 
 export default {
   name: "EventInsight",
+  components: { SplashScreen },
   data() {
     return {
+      isBusyAll: false,
       currentEvent: {},
       productList: [],
       regFormList: [],
@@ -1500,10 +1504,12 @@ export default {
     if (localStorage.getItem("event")) {
       this.currentEvent = JSON.parse(this.$func.getFromLocalStorage("event"));
 
-      this.getBrandProducts();
-      this.getCompanySubmissionForms();
+      this.isBusyAll = true;
+      await this.getBrandProducts();
+      await this.getCompanySubmissionForms();
       await this.getCompanyRegistrationForms();
       this.prepareUI();
+      this.isBusyAll = false;
     } else {
       this.$func.back();
     }

@@ -4,6 +4,7 @@ import Home from '../views/Home.vue'
 import Dashboard from '../views/Dashboard.vue'
 import EventInsight from '../views/EventInsight.vue'
 import AboutEvent from '../views/AboutEvent.vue'
+import ProductCheckout from '../views/ProductCheckout.vue'
 
 Vue.use(VueRouter)
 
@@ -26,6 +27,11 @@ const routes = [
         path: '/about-event',
         component: AboutEvent,
         name: 'AboutEvent'
+      },
+      {
+        path: '/product-checkout',
+        component: ProductCheckout,
+        name: 'ProductCheckout'
       },
     ]
   }

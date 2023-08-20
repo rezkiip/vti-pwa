@@ -1,0 +1,239 @@
+[class*=" link-"].disabled,
+[class^=link-].disabled {
+    color: #eaeaea;
+}
+
+.btn-action:hover,
+.btn-icon:hover {
+    text-decoration: none;
+}
+
+.icon-sm {
+    font-size: 1rem;
+}
+
+.icon-md {
+    font-size: 1.5rem;
+    width: initial;
+    height: initial;
+}
+
+.icon-lg {
+    font-size: 2rem;
+}
+
+.handle {
+    cursor: move;
+}
+
+.form-control[readonly] {
+    background-color: initial;
+}
+
+.form-control:disabled,
+.form-select.disabled {
+    background-color: #fafbfc !important;
+}
+
+.form-select.disabled input::placeholder {
+    color: #c1c3c9;
+}
+
+.form-label.price.required:after {
+    margin-left: initial;
+}
+
+.disabled .ts-control {
+    opacity: initial;
+}
+
+.ts-wrapper.multi.disabled .ts-control>div {
+    background: #fafbfc;
+}
+
+.ts-wrapper.plugin-remove_button.disabled .item .remove {
+    border-left-color: #fafbfc;
+}
+
+.ts-dropdown .option,
+.ts-dropdown [data-disabled],
+.ts-dropdown [data-disabled] [data-selectable].option,
+.dropdown-item.disabled {
+    cursor: inherit;
+    opacity: 0.5;
+}
+
+.dropdown-item-indicator {
+    font-weight: 400;
+    display: inline-flex;
+    margin: 0;
+}
+
+.dropdown-item-icon {
+    color: inherit;
+}
+
+#tabs-description .nav-link {
+    cursor: pointer;
+}
+
+#tabs-description .nav-link .ti:not(.none) {
+    visibility: hidden;
+}
+
+#tabs-description .nav-link .switch-icon.active .ti,
+#tabs-description .nav-link:hover .ti {
+    visibility: visible;
+}
+
+.tab-content textarea {
+    height: 236px;
+}
+
+.nav-link.active a[contenteditable="true"] {
+    background: #fff !important;
+    cursor: text !important;
+    outline: none;
+}
+
+.nav-link:not(.active) a[contenteditable="true"] {
+    background: #f5f7fb !important;
+}
+
+.nav-link.disabled,
+textarea.form-control:disabled {
+    opacity: 0.75;
+}
+
+.avatar,
+.carousel-item {
+    background-size: cover;
+    background-origin: content-box;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.carousel-inner {
+    background-color: #000;
+}
+
+.carousel-item img {
+    max-height: 252px;
+}
+
+.bg-contain {
+    background-size: contain;
+}
+
+.avatar:not(.user-image) {
+    /* color: #626976; */
+    background-color: transparent;
+}
+
+.avatar-upload {
+    width: 5rem;
+    height: 5rem;
+    background-size: contain;
+}
+
+.avatar-upload.filled>* {
+    display: none;
+}
+
+.avatar-upload:hover>* {
+    display: block;
+}
+
+.avatar-upload>.icon:not(.ti-brand-youtube)::before {
+    content: "\eb0b";
+}
+
+.avatar-upload.filled>.icon::before {
+    content: "\eb04";
+}
+
+.avatar-upload>.avatar-upload-text.a-image::after {
+    content: "add image";
+}
+
+.avatar-upload>.avatar-upload-text.a-file::after {
+    content: "add file";
+}
+
+.avatar-upload.filled>.avatar-upload-text::after {
+    content: "replace" !important;
+}
+
+.avatar-upload>.avatar-upload-text.a-logo::after {
+    content: "add logo";
+}
+
+.avatar-upload>.avatar-upload-text.a-picture::after {
+    content: "add picture";
+}
+
+.avatar-upload>.avatar-upload-text.a-video::after {
+    content: "add video";
+}
+
+.avatar-upload>.avatar-upload-text.a-photo::after {
+    content: "add photo";
+}
+
+.avatar-upload>.avatar-upload-text.uploaded::after {
+    content: "";
+}
+
+.steps .step-item {
+    padding-top: 1rem;
+}
+
+div.dataTables_wrapper div.dataTables_info {
+    padding-top: 0 !important;
+}
+
+#timeline .status {
+    border-radius: 0.25rem;
+    font-size: .75rem;
+}
+
+.offcanvas-backdrop {
+    width: initial;
+}
+
+.list-group-item.s_unread .text-truncate {
+    font-weight: 600;
+}
+
+.list-group-item.s_read {
+    background-color: inherit;
+}
+
+.list-group-item.s_read .col-auto:last-child {
+    display: none;
+}
+
+.row.disabled img {
+    -webkit-filter: grayscale(100%);
+    /* Safari 6.0 - 9.0 */
+    filter: grayscale(100%);
+    opacity: .5;
+}
+
+.row.disabled div.fw-bold {
+    color: #626976;
+    opacity: .75;
+}
+
+.row.disabled div.opt_int {
+    display: none !important;
+}
+
+.input-group .btn:disabled {
+    background-color: #fafbfc;
+    opacity: initial;
+}
+
+.input-group .btn:disabled i.ti {
+    opacity: .65;
+}

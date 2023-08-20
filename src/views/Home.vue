@@ -19,10 +19,10 @@ export default {
 </script>
 
 <style lang="scss">
-// @import "../assets/css/tabler-icons.css";
-// @import "../assets/css/tabler.min.css";
-// @import "../assets/css/demo.css";
-// @import "../assets/css/tabler-vendors.min.css";
+@import "../assets/css/tabler-icons.css";
+@import "../assets/css/tabler.min.css";
+@import "../assets/css/demo.css";
+@import "../assets/css/tabler-vendors.min.css";
 @import "../assets/Styles/styles.css";
 
 .sortable > .row > div:first-child,

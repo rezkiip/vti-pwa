@@ -1,5 +1,6 @@
 <template>
   <div class="dashboard">
+    <splash-screen v-if="isBusyAll" />
     <div class="container">
       <div class="carousel-container row">
         <div
@@ -408,11 +409,14 @@
 
 <script>
 import eventService from "@/service/event";
+import SplashScreen from "../components/SplashScreen.vue";
 
 export default {
   name: "Dashboard",
+  components: { SplashScreen },
   data() {
     return {
+      isBusyAll: false,
       upcomingEvents: [],
       startingEvents: [],
       ongoingEvents: [],
@@ -435,8 +439,10 @@ export default {
       this.$func.goTo("/event-insight");
     },
   },
-  mounted() {
-    this.getEventList();
+  async mounted() {
+    this.isBusyAll = true;
+    await this.getEventList();
+    this.isBusyAll = false;
   },
 };
 </script>

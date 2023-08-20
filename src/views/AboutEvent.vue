@@ -1,5 +1,6 @@
 <template>
   <div class="about-event">
+    <splash-screen v-if="isBusyAll" />
     <div class="container">
       <div class="card">
         <div class="card-header">
@@ -236,7 +237,7 @@
                   <div class="row" style="margin: 7rem 0 0 0">
                     <div class="col-10">
                       <a
-                        href="/check-out.html"
+                        @click="$func.goTo('/product-checkout')"
                         class="btn"
                         data-bs-target="#modal-simple"
                         style="
@@ -270,11 +271,14 @@
 
 <script>
 import Dropzone from "dropzone";
+import SplashScreen from "../components/SplashScreen.vue";
 
 export default {
   name: "AboutEvent",
+  components: { SplashScreen },
   data() {
     return {
+      isBusyAll: false,
       currentEvent: {},
       subFormList: [],
     };
