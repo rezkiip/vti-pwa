@@ -1,7 +1,11 @@
 <template>
   <nav class="navbar bg-body-tertiary sticky-top bg-white">
     <div class="container">
-      <span class="navbar-brand mb-0 h1" @click="$func.back()">
+      <span
+        class="navbar-brand mb-0 h1"
+        @click="$func.back()"
+        v-if="$route.path !== '/'"
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           class="icon icon-tabler icon-tabler-chevron-left"
@@ -17,6 +21,9 @@
           <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
           <path d="M15 6l-6 6l6 6"></path>
         </svg>
+        <img src="@/assets/images/logo.svg" alt="" height="30px" />
+      </span>
+      <span class="navbar-brand mb-0 h1" v-else>
         <img src="@/assets/images/logo.svg" alt="" height="30px" />
       </span>
       <span>

@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import Dashboard from '../views/Dashboard.vue'
 import EventInsight from '../views/EventInsight.vue'
+import AboutEvent from '../views/AboutEvent.vue'
 
 Vue.use(VueRouter)
 
@@ -20,6 +21,11 @@ const routes = [
         path: '/event-insight',
         component: EventInsight,
         name: 'EventInsight'
+      },
+      {
+        path: '/about-event',
+        component: AboutEvent,
+        name: 'AboutEvent'
       },
     ]
   }

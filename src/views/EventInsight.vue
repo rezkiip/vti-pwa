@@ -839,10 +839,120 @@
             >
               <div class="offcanvas-header">
                 <h2 class="offcanvas-title" id="offcanvasBottomLabel">
-                  Form Pendaftaran
+                  Form Upload
                 </h2>
               </div>
-              <div class="mb-3">
+
+              <div class="mb-3" v-for="(subForm, k) in subFormList" :key="k">
+                <label
+                  style="margin-left: 1rem"
+                  class="form-label"
+                  :class="{
+                    required: subForm.required === 'Y',
+                  }"
+                >
+                  {{ `${k + 1}. ${subForm.question}` }}
+                </label>
+                <input
+                  style="margin-left: 2rem; width: 21rem"
+                  :type="
+                    JSON.parse(subForm.validation).number === 'Y'
+                      ? 'number'
+                      : 'text'
+                  "
+                  class="form-control"
+                  v-if="subForm.question_type === 'Short Answer'"
+                />
+                <textarea
+                  style="margin-left: 2rem; width: 21rem"
+                  class="form-control"
+                  data-bs-toggle="autosize"
+                  v-else-if="subForm.question_type === 'textarea'"
+                ></textarea>
+                <div
+                  style="margin-left: 2rem; width: 21rem"
+                  v-else-if="subForm.question_type === 'Single Choice'"
+                >
+                  <div
+                    v-for="(option, i) in JSON.parse(subForm.free_data1)"
+                    class="d-inline-block me-3"
+                    :key="i"
+                  >
+                    <label class="form-check">
+                      <input
+                        name="radio"
+                        :data-option="i"
+                        class="form-check-input"
+                        type="radio"
+                      />
+                      <span class="form-check-label" v-text="option"></span>
+                    </label>
+                  </div>
+                </div>
+                <div
+                  style="margin-left: 2rem; width: 21rem"
+                  v-else-if="subForm.question_type === 'Multiple Choice'"
+                >
+                  <div
+                    v-for="(option, i) in JSON.parse(subForm.free_data1)"
+                    class="d-inline-block me-3"
+                    :key="i"
+                  >
+                    <label class="form-check">
+                      <input
+                        name="checkbox"
+                        :data-option="i"
+                        class="form-check-input"
+                        type="checkbox"
+                      />
+                      <span class="form-check-label" v-text="option"></span>
+                    </label>
+                  </div>
+                </div>
+                <div
+                  style="margin-left: 2rem; width: 21rem"
+                  v-else-if="subForm.question_type === 'Dropdown'"
+                >
+                  <select type="text" class="form-select">
+                    <option
+                      v-for="(option, i) in JSON.parse(subForm.free_data1)"
+                      :key="i"
+                      :data-option="i"
+                    >
+                      {{ option }}
+                    </option>
+                  </select>
+                </div>
+                <div
+                  style="margin-left: 2rem; width: 21rem"
+                  v-else-if="subForm.question_type === 'File Upload'"
+                >
+                  <p>
+                    {{ subForm.description }}
+                  </p>
+                  <p
+                    v-if="JSON.parse(subForm.validation).file_extension === 'Y'"
+                  >
+                    Berkas file :
+                    <span style="margin-left: 0.5rem; color: #1b9dfb">
+                      {{ JSON.parse(subForm.validation).extensions.join(", ") }}
+                    </span>
+                  </p>
+                  <p>
+                    Jumlah :
+                    <span style="margin-left: 0.5rem; color: #1b9dfb">
+                      {{ JSON.parse(subForm.validation).number_of_files }}
+                    </span>
+                  </p>
+                  <input
+                    type="file"
+                    class="form-control"
+                    style="margin: 20px 0"
+                  />
+                </div>
+              </div>
+
+              <!-- <div class="mb-3">
                 <label
                   style="margin-left: 1rem; margin-top: 1rem"
                   class="form-label required"
@@ -902,7 +1012,7 @@
                 <div style="margin: 0 2rem">
                   <input type="file" class="form-control" />
                 </div>
-              </div>
+              </div> -->
               <div style="margin: 0 2rem">
                 <p style="color: red">* item wajib</p>
               </div>
@@ -966,7 +1076,7 @@
               </div>
             </a>
 
-            <div class="mb-3">
+            <!-- <div class="mb-3">
               <div class="card" style="margin-top: 5px">
                 <div class="card-header row">
                   <div class="col-4 text-center">
@@ -1097,7 +1207,7 @@
                   </div>
                 </div>
               </div>
-            </div>
+            </div> -->
 
             <div>
               <a
@@ -1112,14 +1222,14 @@
             </div>
             <br />
 
-            <a href="/ttg-hl.html" style="text-decoration: none">
+            <a @click.prevent="getEventAbout" style="text-decoration: none">
               <div
                 class="tentang-event"
                 style="text-decoration: none; color: black"
               >
-                <div>
+                <div class="d-flex justify-content-between align-items-end">
                   <h3>Tentang Event Ini</h3>
-                  <div class="tentang-event-arrow">
+                  <div>
                     <svg
                       style="position: relative; top: -0.8rem"
                       version="1.1"
@@ -1245,6 +1355,7 @@ export default {
       currentEvent: {},
       productList: [],
       regFormList: [],
+      subFormList: [],
     };
   },
   computed: {
@@ -1273,6 +1384,13 @@ export default {
     },
   },
   methods: {
+    getEventAbout() {
+      this.$func.saveToLocalStorage(
+        "submission-form-list",
+        JSON.stringify(this.subFormList)
+      );
+      this.$func.goTo("/about-event");
+    },
     async getBrandProducts() {
       const productList = (
         await productService.getBrandProducts(
@@ -1298,6 +1416,22 @@ export default {
       this.regFormList = regFormList.filter((t) => {
         const selectedTemplates = JSON.parse(
           this.currentEvent.select_form_registration
+        );
+
+        return selectedTemplates.indexOf(t.template_id) >= 0;
+      });
+    },
+    async getCompanySubmissionForms() {
+      const subFormList = (
+        await templateService.getCompanyTemplates(
+          this.currentEvent.company_id,
+          "SUBMISSION"
+        )
+      ).data.templates;
+
+      this.subFormList = subFormList.filter((t) => {
+        const selectedTemplates = JSON.parse(
+          this.currentEvent.submission_online_select_form
         );
 
         return selectedTemplates.indexOf(t.template_id) >= 0;
@@ -1367,8 +1501,11 @@ export default {
       this.currentEvent = JSON.parse(this.$func.getFromLocalStorage("event"));
 
       this.getBrandProducts();
+      this.getCompanySubmissionForms();
       await this.getCompanyRegistrationForms();
       this.prepareUI();
+    } else {
+      this.$func.back();
     }
   },
 };
