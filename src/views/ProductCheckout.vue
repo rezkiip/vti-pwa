@@ -251,7 +251,7 @@
           tabindex="-1"
           id="offcanvasBottom1"
           aria-labelledby="offcanvasBottomLabel"
-          style="height: 38rem"
+          style="height: 90vh"
         >
           <div class="card-header">
             <h3 style="margin: 2rem 6.5rem">Jasa Pengiriman</h3>
@@ -259,111 +259,51 @@
           </div>
 
           <div class="offcanvas-body">
-            <div class="mb-3 custom-select">
-              <div class="dropdown">
-                <button class="dropdown-button" style="width: 18rem">
-                  <img
-                    style="height: 60px; position: relative; right: 5.5rem"
-                    src="@/assets/images/Foto-2-Naskah-Mengenal-Sosok-Kreator-Logo-‘Biru-Tua-Merah-JNE.jpg"
-                  />
-                </button>
-                <ul
-                  class="dropdown-list"
-                  style="position: relative; z-index: 1"
-                >
-                  <li>
+            <div class="accordion" id="accordion-courier">
+              <div
+                class="accordion-item"
+                v-for="(courier, i) in courierList"
+                :key="i"
+              >
+                <h2 class="accordion-header" :id="`heading-${i + 1}`">
+                  <button
+                    class="accordion-button collapsed"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    :data-bs-target="`#collapse-${i + 1}`"
+                    aria-expanded="false"
+                    @click="checkCourier(i + 1)"
+                  >
+                    <input
+                      type="radio"
+                      name="courier"
+                      :id="`courier-${i + 1}`"
+                    />
                     <img
-                      class="option-image"
-                      style="height: 50px"
-                      src="@/assets/images/Foto-2-Naskah-Mengenal-Sosok-Kreator-Logo-‘Biru-Tua-Merah-JNE.jpg"
-                    />Ekonomi
-                    <span style="margin-left: 5rem">Rp 9.000</span>
-                  </li>
-                  <li>
-                    <img
-                      class="option-image"
-                      style="height: 50px"
-                      src="@/assets/images/Foto-2-Naskah-Mengenal-Sosok-Kreator-Logo-‘Biru-Tua-Merah-JNE.jpg"
-                    />Reguler
-                    <span style="margin-left: 5rem">Rp 11.000</span>
-                  </li>
-                  <li>
-                    <img
-                      class="option-image"
-                      style="height: 50px"
-                      src="@/assets/images/Foto-2-Naskah-Mengenal-Sosok-Kreator-Logo-‘Biru-Tua-Merah-JNE.jpg"
-                    />Next Day
-                    <span style="margin-left: 4.5rem">Rp 14.000</span>
-                  </li>
-                  <li>
-                    <img
-                      class="option-image"
-                      style="height: 50px"
-                      src="@/assets/images/Foto-2-Naskah-Mengenal-Sosok-Kreator-Logo-‘Biru-Tua-Merah-JNE.jpg"
-                    />Same Day
-                    <span style="margin-left: 4rem">Rp 16.000</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-
-            <div class="mb-3 custom-select">
-              <div class="dropdown">
-                <button class="dropdown-button" style="width: 18rem">
-                  <img
-                    style="height: 60px; position: relative; right: 5.5rem"
-                    src="@/assets/images/ninja.png"
-                  />
-                </button>
-                <ul
-                  class="dropdown-list"
-                  style="position: relative; z-index: 1"
+                      :src="getCourierLogoImage(courier.parameter_icon)"
+                      :alt="courier.parameter_name"
+                      width="150"
+                    />
+                  </button>
+                </h2>
+                <div
+                  :id="`collapse-${i + 1}`"
+                  class="accordion-collapse collapse"
+                  data-bs-parent="#accordion-courier"
+                  style=""
                 >
-                  <li>Option 1</li>
-                  <li>Option 2</li>
-                  <li>Option 3</li>
-                  <li>Option 4</li>
-                </ul>
-              </div>
-            </div>
-
-            <div class="mb-3 custom-select">
-              <div class="dropdown">
-                <button class="dropdown-button" style="width: 18rem">
-                  <img
-                    style="height: 60px; position: relative; right: 5.5rem"
-                    src="@/assets/images/sicepat.png"
-                  />
-                </button>
-                <ul
-                  class="dropdown-list"
-                  style="position: relative; z-index: 1"
-                >
-                  <li>Option 1</li>
-                  <li>Option 2</li>
-                  <li>Option 3</li>
-                  <li>Option 4</li>
-                </ul>
-              </div>
-            </div>
-
-            <div class="mb-3 custom-select">
-              <div class="dropdown">
-                <button class="dropdown-button" style="width: 18rem">
-                  <img
-                    style="height: 60px; position: relative; right: 5.5rem"
-                    src="@/assets/images/gosend.png"
-                  />
-                </button>
-                <ul
-                  class="dropdown-list"
-                  style="position: relative; z-index: 1"
-                >
-                  <li>Option 1</li>
-                  <li>Option 2</li>
-                  <li>Option 3</li>
-                  <li>Option 4</li>
-                </ul>
+                  <div class="accordion-body pt-0">
+                    <strong>This is the first item's accordion body.</strong> It
+                    is hidden by default, until the collapse plugin adds the
+                    appropriate classes that we use to style each element. These
+                    classes control the overall appearance, as well as the
+                    showing and hiding via CSS transitions. You can modify any
+                    of this with custom CSS or overriding our default variables.
+                    It's also worth noting that just about any HTML can go
+                    within the <code>.accordion-body</code>, though the
+                    transition does limit overflow.
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -487,6 +427,7 @@
 <script>
 import TomSelect from "tom-select";
 import shipdeoService from "@/service/shipdeo";
+import integrationService from "@/service/integration";
 import moment from "moment";
 import Vue from "vue";
 import SplashScreen from "../components/SplashScreen.vue";
@@ -507,9 +448,16 @@ export default {
       shipdeo_access_token: "",
       shipdeo_access_token_expires_at: "",
       isBusyAll: false,
+      courierList: [],
     };
   },
   methods: {
+    getCourierLogoImage(imgName) {
+      return require("@/assets/images/courier/kurir-" + imgName);
+    },
+    checkCourier(idx) {
+      document.querySelector("#courier-" + idx).checked = true;
+    },
     async getShipdeoAccess() {
       try {
         const tokenResponse = (await shipdeoService.getAccessToken()).data;
@@ -680,6 +628,24 @@ export default {
     },
   },
   async mounted() {
+    if (localStorage.getItem("event")) {
+      const currentEvent = JSON.parse(this.$func.getFromLocalStorage("event"));
+      const courierList = JSON.parse(currentEvent.courier);
+
+      const companyCouriers = (
+        await integrationService.getCompanyIntegrations(
+          currentEvent.company_id,
+          "courier"
+        )
+      ).data.integrations;
+
+      this.courierList = companyCouriers.filter(
+        (courier) => courierList.indexOf(courier.integration_id) >= 0
+      );
+    } else {
+      this.$func.back();
+    }
+
     if (
       !localStorage.getItem("shipdeo_access_token") ||
       moment().isAfter(

@@ -732,7 +732,7 @@
                   style="margin-left: 2rem; width: 21rem"
                   class="form-control"
                   data-bs-toggle="autosize"
-                  v-else-if="regForm.question_type === 'textarea'"
+                  v-else-if="regForm.question_type === 'Long Answer'"
                 ></textarea>
                 <div
                   style="margin-left: 2rem; width: 21rem"
@@ -1322,7 +1322,7 @@
               <a href="#">Lupa Password?</a>
               <br />
               <a
-                href="#"
+                @click.prevent="login"
                 data-bs-toggle="modal"
                 data-bs-target="#modal-simple2"
                 type="button"
@@ -1394,6 +1394,13 @@ export default {
         JSON.stringify(this.subFormList)
       );
       this.$func.goTo("/about-event");
+    },
+    login() {
+      this.$func.saveToLocalStorage(
+        "registration-form-list",
+        JSON.stringify(this.regFormList)
+      );
+      this.$func.goTo("/registration-form");
     },
     async getBrandProducts() {
       const productList = (

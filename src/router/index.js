@@ -5,6 +5,7 @@ import Dashboard from '../views/Dashboard.vue'
 import EventInsight from '../views/EventInsight.vue'
 import AboutEvent from '../views/AboutEvent.vue'
 import ProductCheckout from '../views/ProductCheckout.vue'
+import RegistrationForm from '../views/RegistrationForm.vue'
 
 Vue.use(VueRouter)
 
@@ -33,6 +34,11 @@ const routes = [
         component: ProductCheckout,
         name: 'ProductCheckout'
       },
+      {
+        path: '/registration-form',
+        component: RegistrationForm,
+        name: 'RegistrationForm'
+      }
     ]
   }
 ]
