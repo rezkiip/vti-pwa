@@ -419,6 +419,120 @@
             </div>
           </div>
         </div>
+        <hr />
+        <div class="" style="margin-bottom: 4rem">
+          <!-- item card  -->
+          <div class="card" v-for="(product, i) in productList" :key="i">
+            <div class="card-body p-0 row">
+              <div class="col-5" style="margin: 10px">
+                <!-- Libs JS -->
+                <a data-fslightbox="gallery" :href="product.photo">
+                  <img
+                    :src="product.photo"
+                    alt=""
+                    style="border-radius: 10px"
+                  />
+                </a>
+              </div>
+              <div class="col row" style="margin: 10px 0">
+                <p style="font-size: 12px">
+                  {{ product.description }}
+                </p>
+                <div class="col-8">
+                  <h4 style="font-size: 12px">
+                    <b>Rp {{ $func.formatAmount(product.price) }}</b
+                    ><span style="color: red" v-if="product.optional !== 'N'"
+                      >*</span
+                    >
+                  </h4>
+                </div>
+                <div class="col-3">
+                  <span
+                    ><img
+                      style="height: 13px; position: relative; bottom: 1px"
+                      src="@/assets/images/circle-minus.svg"
+                  /></span>
+                  <span style="position: relative; right: 2px">1</span>
+                  <span
+                    ><img
+                      style="
+                        height: 11px;
+                        position: relative;
+                        bottom: 21px;
+                        left: 25px;
+                      "
+                      src="@/assets/images/plus.svg"
+                  /></span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- END item card  -->
+        </div>
+      </div>
+    </div>
+    <div class="fixed-bottom">
+      <div class="card bayar-btn-container" style="background-color: white">
+        <div class="row" style="margin: 1rem 0">
+          <div class="col-8">
+            <a
+              href="#"
+              class="btn btn-outline-primary disabled w-100"
+              data-bs-toggle="modal"
+              data-bs-target="#modal-simple"
+              style="background-color: #1b9dfb; color: white; width: 100%"
+              diasable
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="icon icon-tabler icon-tabler-shield-check-filled"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                stroke-width="2"
+                stroke="currentColor"
+                fill="none"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                <path
+                  d="M11.998 2l.118 .007l.059 .008l.061 .013l.111 .034a.993 .993 0 0 1 .217 .112l.104 .082l.255 .218a11 11 0 0 0 7.189 2.537l.342 -.01a1 1 0 0 1 1.005 .717a13 13 0 0 1 -9.208 16.25a1 1 0 0 1 -.502 0a13 13 0 0 1 -9.209 -16.25a1 1 0 0 1 1.005 -.717a11 11 0 0 0 7.531 -2.527l.263 -.225l.096 -.075a.993 .993 0 0 1 .217 -.112l.112 -.034a.97 .97 0 0 1 .119 -.021l.115 -.007zm3.71 7.293a1 1 0 0 0 -1.415 0l-3.293 3.292l-1.293 -1.292l-.094 -.083a1 1 0 0 0 -1.32 1.497l2 2l.094 .083a1 1 0 0 0 1.32 -.083l4 -4l.083 -.094a1 1 0 0 0 -.083 -1.32z"
+                  stroke-width="0"
+                  fill="currentColor"
+                ></path>
+              </svg>
+              BAYAR
+            </a>
+          </div>
+          <a
+            class="row col-4 total-biaya"
+            data-bs-toggle="offcanvas"
+            href="#offcanvasBottom4"
+            role="button"
+            aria-controls="offcanvasBottom"
+          >
+            <p class="text-muted">Total Biaya</p>
+            <h4><b>Rp 36.012</b></h4>
+            <div class="total-biaya-chv">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="icon icon-tabler icon-tabler-chevron-up"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                stroke-width="2"
+                stroke="currentColor"
+                fill="none"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                <path d="M6 15l6 -6l6 6"></path>
+              </svg>
+            </div>
+          </a>
+        </div>
       </div>
     </div>
   </div>
@@ -431,6 +545,7 @@ import integrationService from "@/service/integration";
 import moment from "moment";
 import Vue from "vue";
 import SplashScreen from "../components/SplashScreen.vue";
+import productService from "@/service/product";
 
 export default {
   name: "ProductCheckout",
@@ -449,6 +564,7 @@ export default {
       shipdeo_access_token_expires_at: "",
       isBusyAll: false,
       courierList: [],
+      productList: [],
     };
   },
   methods: {
@@ -642,6 +758,21 @@ export default {
       this.courierList = companyCouriers.filter(
         (courier) => courierList.indexOf(courier.integration_id) >= 0
       );
+
+      const productList = (
+        await productService.getBrandProducts(
+          currentEvent.brand_id,
+          currentEvent.company_id
+        )
+      ).data.products;
+
+      console.log("productList", productList);
+
+      this.productList = productList.filter((p) => {
+        const selectedProducts = JSON.parse(currentEvent.select_product);
+
+        return selectedProducts.indexOf(p.product_id) >= 0;
+      });
     } else {
       this.$func.back();
     }
