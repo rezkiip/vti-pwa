@@ -3,30 +3,31 @@
     <splash-screen v-if="isBusyAll" />
     <div class="container" style="background-color: white">
       <div class="">
-        <div style="background-color: #c6e7ff; margin: 5px 0 0 0">
-          <div class="info-label-checkout">
-            <img
-              src="@/assets/images/chevron-label.svg"
-              alt=""
-              style="height: 17px"
-            />
-          </div>
-          <p class="text-muted" style="margin: 6px 0 6px 20px">
-            Lengkapi form isian untuk melanjutkan
-          </p>
+        <div
+          style="background-color: #c6e7ff; margin: 5px 0 0 0"
+          class="d-flex justify-content-between align-items-center p-2"
+        >
+          <p class="text-muted m-0">Lengkapi form isian untuk melanjutkan</p>
+          <img
+            src="@/assets/images/chevron-label.svg"
+            alt=""
+            style="height: 17px"
+            class="d-inline-block"
+          />
         </div>
 
-        <div style="background-color: #c6e7ff; margin: 5px 0 0 0">
-          <div class="info-label-checkout2">
-            <img
-              src="@/assets/images/chevron-label.svg"
-              alt=""
-              style="height: 17px"
-            />
-          </div>
-          <p class="text-muted" style="margin: 6px 0 6px 20px">
+        <div
+          style="background-color: #c6e7ff; margin: 5px 0 0 0"
+          class="d-flex justify-content-between align-items-center p-2"
+        >
+          <p class="text-muted m-0">
             Verifikasi alamat email untuk melanjutkan
           </p>
+          <img
+            src="@/assets/images/chevron-label.svg"
+            alt=""
+            style="height: 17px"
+          />
         </div>
 
         <a
@@ -38,17 +39,14 @@
           data-bs-toggle="offcanvas"
           href="#offcanvasBottom"
           role="button"
+          class="d-flex justify-content-between align-items-center p-2"
         >
-          <div class="info-label-checkout3">
-            <img
-              src="@/assets/images/chevron-label.svg"
-              alt=""
-              style="height: 17px"
-            />
-          </div>
-          <p class="text-muted" style="margin: 6px 0 6px 20px">
-            Lengkapi data alamat pengirim
-          </p>
+          <p class="text-muted m-0">Lengkapi data alamat pengirim</p>
+          <img
+            src="@/assets/images/chevron-label.svg"
+            alt=""
+            style="height: 17px"
+          />
         </a>
 
         <div class="col-lg-6" style="margin: 15px 0 15px 0">
@@ -436,33 +434,31 @@
               </div>
               <div class="col row" style="margin: 10px 0">
                 <p style="font-size: 12px">
-                  {{ product.description }}
+                  {{ product.title
+                  }}{{ product.description ? `, ${product.description}` : "" }}
                 </p>
-                <div class="col-8">
-                  <h4 style="font-size: 12px">
-                    <b>Rp {{ $func.formatAmount(product.price) }}</b
-                    ><span style="color: red" v-if="product.optional !== 'N'"
+                <div class="col-8 d-flex align-items-center">
+                  <h4 style="font-size: 12px; font-weight: bold" class="m-0">
+                    Rp {{ $func.formatAmount(product.price) }}
+                    <span style="color: red" v-if="product.optional !== 'N'"
                       >*</span
                     >
                   </h4>
                 </div>
-                <div class="col-3">
-                  <span
-                    ><img
-                      style="height: 13px; position: relative; bottom: 1px"
-                      src="@/assets/images/circle-minus.svg"
-                  /></span>
-                  <span style="position: relative; right: 2px">1</span>
-                  <span
-                    ><img
-                      style="
-                        height: 11px;
-                        position: relative;
-                        bottom: 21px;
-                        left: 25px;
-                      "
-                      src="@/assets/images/plus.svg"
-                  /></span>
+                <div
+                  class="col-4 align-items-center d-flex justify-content-between"
+                >
+                  <img
+                    style="height: 13px"
+                    class="d-inline-block"
+                    src="@/assets/images/circle-minus.svg"
+                  />
+                  <span class="d-inline-block">1</span>
+                  <img
+                    style="height: 13px"
+                    class="d-inline-block"
+                    src="@/assets/images/plus.svg"
+                  />
                 </div>
               </div>
             </div>
