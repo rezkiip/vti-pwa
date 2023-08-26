@@ -452,12 +452,16 @@
                     style="height: 13px"
                     class="d-inline-block"
                     src="@/assets/images/circle-minus.svg"
+                    @click="decreaseQty(product.product_id)"
                   />
-                  <span class="d-inline-block">1</span>
+                  <span class="d-inline-block">
+                    {{ product.qty }}
+                  </span>
                   <img
                     style="height: 13px"
                     class="d-inline-block"
                     src="@/assets/images/plus.svg"
+                    @click="increaseQty(product.product_id)"
                   />
                 </div>
               </div>
@@ -509,7 +513,7 @@
             aria-controls="offcanvasBottom"
           >
             <p class="text-muted">Total Biaya</p>
-            <h4><b>Rp 36.012</b></h4>
+            <h4><b>Rp {{ total }}</b></h4>
             <div class="total-biaya-chv">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -563,12 +567,43 @@ export default {
       productList: [],
     };
   },
+  computed: {
+    total() {
+      let result = 0;
+
+      this.productList.forEach(p => {
+        result += p.qty * p.price
+      });
+
+      return this.$func.formatAmount(result)
+    }
+  },
   methods: {
     getCourierLogoImage(imgName) {
       return require("@/assets/images/courier/kurir-" + imgName);
     },
     checkCourier(idx) {
       document.querySelector("#courier-" + idx).checked = true;
+    },
+    decreaseQty(product_id) {
+      this.productList = this.productList.map((p) => {
+        if (p.product_id === product_id) {
+          if (p.qty > 0) {
+            p.qty = p.qty - 1;
+          }
+        }
+
+        return p;
+      });
+    },
+    increaseQty(product_id) {
+      this.productList = this.productList.map((p) => {
+        if (p.product_id === product_id) {
+          p.qty = p.qty + 1;
+        }
+
+        return p;
+      });
     },
     async getShipdeoAccess() {
       try {
@@ -764,11 +799,17 @@ export default {
 
       console.log("productList", productList);
 
-      this.productList = productList.filter((p) => {
-        const selectedProducts = JSON.parse(currentEvent.select_product);
+      this.productList = productList
+        .filter((p) => {
+          const selectedProducts = JSON.parse(currentEvent.select_product);
 
-        return selectedProducts.indexOf(p.product_id) >= 0;
-      });
+          return selectedProducts.indexOf(p.product_id) >= 0;
+        })
+        .map((p) => {
+          p.qty = 0;
+
+          return p;
+        });
     } else {
       this.$func.back();
     }
