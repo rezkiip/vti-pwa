@@ -1,5 +1,5 @@
 <template>
-  <div class="product-checkout">
+  <form @submit.prevent="submit" class="product-checkout">
     <splash-screen v-if="isBusyAll" />
     <div class="container" style="background-color: white">
       <div class="">
@@ -82,20 +82,42 @@
             </a>
             <a
               class="col row"
+              :class="{
+                disabled: paymentStep < 2,
+              }"
               style="text-decoration: none; color: black"
               data-bs-toggle="offcanvas"
               href="#offcanvasBottom1"
               role="button"
             >
               <div class="col text-start">
-                <img
+                <svg
                   style="position: relative; top: 10px; right: 4px"
-                  src="@/assets/images/package-import.svg"
-                  alt=""
-                />
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="icon icon-tabler icon-tabler-package-import"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  stroke-width="2"
+                  :stroke="paymentStep < 2 ? '#AAAAAA' : '#1B9DFB'"
+                  fill="none"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                  <path d="M12 21l-8 -4.5v-9l8 -4.5l8 4.5v4.5" />
+                  <path d="M12 12l8 -4.5" />
+                  <path d="M12 12v9" />
+                  <path d="M12 12l-8 -4.5" />
+                  <path d="M22 18h-7" />
+                  <path d="M18 15l-3 3l3 3" />
+                </svg>
               </div>
               <div
                 class="col"
+                :class="{
+                  'text-muted': paymentStep < 2,
+                }"
                 style="position: relative; right: 1rem; top: 10px"
               >
                 Kurir/ Ekspedisi<br />
@@ -116,17 +138,41 @@
               data-bs-toggle="offcanvas"
               href="#offcanvasBottom3"
               role="button"
+              :class="{
+                disabled: paymentStep < 2,
+              }"
             >
               <div class="col text-start">
-                <img
+                <svg
                   style="position: relative; top: 10px; right: 3px"
-                  src="@/assets/images/building-bank.svg"
-                  alt=""
-                />
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="icon icon-tabler icon-tabler-building-bank"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  stroke-width="2"
+                  :stroke="paymentStep < 3 ? '#AAAAAA' : '#1B9DFB'"
+                  fill="none"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                  <path d="M3 21l18 0" />
+                  <path d="M3 10l18 0" />
+                  <path d="M5 6l7 -3l7 3" />
+                  <path d="M4 10l0 11" />
+                  <path d="M20 10l0 11" />
+                  <path d="M8 14l0 3" />
+                  <path d="M12 14l0 3" />
+                  <path d="M16 14l0 3" />
+                </svg>
               </div>
               <div
                 class="col"
                 style="position: relative; right: 1rem; top: 10px"
+                :class="{
+                  'text-muted': paymentStep < 3,
+                }"
               >
                 Metode Pembayaran<br />
                 <b>Transfer</b>
@@ -140,105 +186,105 @@
           class="offcanvas offcanvas-bottom container"
           tabindex="-1"
           id="offcanvasBottom"
-          style="height: 35rem"
+          style="height: 70vh"
           aria-labelledby="offcanvasBottomLabel"
+          data-bs-backdrop="static"
+          data-bs-keyboard="false"
         >
           <div class="card-header">
             <h2 style="margin-top: 10px">Data Penerima</h2>
             <br />
           </div>
-          <div class="card-body" style="margin: 0 2rem">
-            <div>
-              <div class="mb-3 row">
-                <div class="col-6">
-                  <label class="form-label">Nama</label>
-                  <input
-                    style="width: 9rem"
-                    type="text"
-                    class="form-control"
-                    name="example-text-input"
-                    placeholder="Nama"
-                  />
-                </div>
-                <div class="col-6">
-                  <label class="form-label">No. Hp</label>
-                  <input
-                    style="width: rem"
-                    type="text"
-                    class="form-control"
-                    name="example-text-input"
-                    placeholder="No. HP"
-                  />
-                </div>
-              </div>
-
-              <h3>Alamat Penerima</h3>
-              <label for="select-city">Kabupaten/Kota</label>
-              <div class="form-floating" style="margin-bottom: 1rem">
-                <select
-                  class="form-select"
-                  id="select-city"
-                  aria-label="Floating label select example"
-                  v-model="shippingRecipientData.city"
-                >
-                  <option selected disabled></option>
-                </select>
-              </div>
-              <label for="select-city">Kecamatan/Kode Pos</label>
-              <div class="form-floating">
-                <select
-                  class="form-select"
-                  id="select-subdistrict"
-                  aria-label="Floating label select example"
-                >
-                  <option selected disabled></option>
-                </select>
-              </div>
-
-              <div style="margin: 1rem 0">
-                <label class="form-label">Alamat Lengkap</label>
+          <div class="card-body pb-5" style="margin: 0 2rem; overflow-y: auto">
+            <div class="mb-3 row">
+              <div class="col-6">
+                <label class="form-label">Nama</label>
                 <input
-                  style="width: rem"
+                  style="width: 9rem"
                   type="text"
                   class="form-control"
                   name="example-text-input"
-                  placeholder="Alamat Lengkap"
+                  placeholder="Nama"
+                  autocomplete="off"
+                  v-model="shippingRecipientData.name"
                 />
               </div>
-
-              <div style="margin: 1rem 0">
-                <label class="form-label">Catatan untuk kurir (opsional)</label>
+              <div class="col-6">
+                <label class="form-label">No. Hp</label>
                 <input
                   style="width: rem"
                   type="text"
                   class="form-control"
                   name="example-text-input"
-                  placeholder="Catatan"
+                  placeholder="No. HP"
+                  v-model="shippingRecipientData.phone"
                 />
               </div>
             </div>
+
+            <h3>Alamat Penerima</h3>
+            <label for="select-city">Kabupaten/Kota</label>
+            <div class="form-floating" style="margin-bottom: 1rem">
+              <select
+                class="form-select"
+                id="select-city"
+                aria-label="Floating label select example"
+                v-model="shippingRecipientData.city"
+              >
+                <option selected disabled></option>
+              </select>
+            </div>
+            <label for="select-city">Kecamatan/Kode Pos</label>
+            <div class="form-floating">
+              <select
+                class="form-select"
+                id="select-subdistrict"
+                aria-label="Floating label select example"
+                v-model="shippingRecipientData.postalCode"
+              >
+                <option selected disabled></option>
+              </select>
+            </div>
+
+            <div style="margin: 1rem 0">
+              <label class="form-label">Alamat Lengkap</label>
+              <input
+                style="width: rem"
+                type="text"
+                class="form-control"
+                name="example-text-input"
+                placeholder="Alamat Lengkap"
+                v-model="shippingRecipientData.address"
+              />
+            </div>
+
+            <div style="margin: 1rem 0">
+              <label class="form-label">Catatan untuk kurir (opsional)</label>
+              <input
+                style="width: rem"
+                type="text"
+                class="form-control"
+                name="example-text-input"
+                placeholder="Catatan"
+                v-model="shippingRecipientData.note"
+              />
+            </div>
           </div>
 
-          <div class="card bayar-btn-container fixed-bottom">
-            <div
-              class="row"
-              style="
-                margin: 1rem 0;
-                position: relative;
-                left: 12rem;
-                width: 250px;
-              "
-            >
-              <div class="col-8">
-                <a
-                  href="#"
+          <div class="card bayar-btn-container fixed-bottom px-5 py-2">
+            <div class="row justify-content-end">
+              <div class="col-6">
+                <button
+                  @click="saveRecipientData"
+                  type="button"
                   class="btn"
+                  data-bs-dismiss="offcanvas"
                   data-bs-toggle="modal"
                   data-bs-target="#modal-simple"
                   style="background-color: #1b9dfb; color: white; width: 100%"
                 >
-                  SIMPAN
-                </a>
+                  Simpan
+                </button>
               </div>
             </div>
           </div>
@@ -284,24 +330,20 @@
                     />
                   </button>
                 </h2>
-                <div
+                <ul
                   :id="`collapse-${i + 1}`"
                   class="accordion-collapse collapse"
                   data-bs-parent="#accordion-courier"
                   style=""
                 >
-                  <div class="accordion-body pt-0">
-                    <strong>This is the first item's accordion body.</strong> It
-                    is hidden by default, until the collapse plugin adds the
-                    appropriate classes that we use to style each element. These
-                    classes control the overall appearance, as well as the
-                    showing and hiding via CSS transitions. You can modify any
-                    of this with custom CSS or overriding our default variables.
-                    It's also worth noting that just about any HTML can go
-                    within the <code>.accordion-body</code>, though the
-                    transition does limit overflow.
-                  </div>
-                </div>
+                  <li v-for="(service, j) in courier.serviceList" :key="j">
+                    <input
+                      type="radio"
+                      :id="`${service.courierCode}__${service.service}`"
+                    />
+                    {{ service.name }}
+                  </li>
+                </ul>
               </div>
             </div>
 
@@ -316,14 +358,14 @@
                 "
               >
                 <div class="col-8">
-                  <a
-                    href="/acc.html"
+                  <button
+                    data-bs-dismiss="offcanvas"
                     class="btn"
                     data-bs-target="#modal-simple"
                     style="background-color: #1b9dfb; color: white; width: 100%"
                   >
-                    SIMPAN
-                  </a>
+                    Simpan
+                  </button>
                 </div>
               </div>
             </div>
@@ -475,13 +517,13 @@
       <div class="card bayar-btn-container" style="background-color: white">
         <div class="row" style="margin: 1rem 0">
           <div class="col-8">
-            <a
-              href="#"
-              class="btn btn-outline-primary disabled w-100"
+            <button
+              type="submit"
+              class="btn btn-outline-primary w-100"
               data-bs-toggle="modal"
               data-bs-target="#modal-simple"
               style="background-color: #1b9dfb; color: white; width: 100%"
-              diasable
+              :disabled="paymentStep < 4"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -503,7 +545,7 @@
                 ></path>
               </svg>
               BAYAR
-            </a>
+            </button>
           </div>
           <a
             class="row col-4 total-biaya"
@@ -513,7 +555,9 @@
             aria-controls="offcanvasBottom"
           >
             <p class="text-muted">Total Biaya</p>
-            <h4><b>Rp {{ total }}</b></h4>
+            <h4>
+              <b>Rp {{ total }}</b>
+            </h4>
             <div class="total-biaya-chv">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -535,13 +579,14 @@
         </div>
       </div>
     </div>
-  </div>
+  </form>
 </template>
 
 <script>
 import TomSelect from "tom-select";
 import shipdeoService from "@/service/shipdeo";
 import integrationService from "@/service/integration";
+import addressService from "@/service/address";
 import moment from "moment";
 import Vue from "vue";
 import SplashScreen from "../components/SplashScreen.vue";
@@ -552,9 +597,14 @@ export default {
   components: { SplashScreen },
   data() {
     return {
+      shippingWarehouseData: {},
       shippingRecipientData: {
+        name: "",
+        phone: "",
         city: "",
         postalCode: "",
+        address: "",
+        note: "",
       },
       dropdownForm: {
         selectCity: null,
@@ -565,18 +615,19 @@ export default {
       isBusyAll: false,
       courierList: [],
       productList: [],
+      paymentStep: 1,
     };
   },
   computed: {
     total() {
       let result = 0;
 
-      this.productList.forEach(p => {
-        result += p.qty * p.price
+      this.productList.forEach((p) => {
+        result += p.qty * p.price;
       });
 
-      return this.$func.formatAmount(result)
-    }
+      return this.$func.formatAmount(result);
+    },
   },
   methods: {
     getCourierLogoImage(imgName) {
@@ -605,6 +656,67 @@ export default {
         return p;
       });
     },
+    async saveRecipientData() {
+      const selectedDestinationCity = document.querySelector(
+        "#selected-destination-city"
+      );
+      const selectedDestinationSubdistrict = document.querySelector(
+        "#selected-destination-subdistrict"
+      );
+      const warehouseProperties = JSON.parse(
+        this.shippingWarehouseData.free_data1
+      );
+
+      const reqBody = {
+        couriers: ["sicepat", "anteraja", "ninja", "jnt", "jne", "sap", "sc"],
+        items: [
+          {
+            name: "",
+            description: "",
+            weight: "",
+            weight_uom: "gr",
+            qty: "",
+            value: "",
+            width: "",
+            height: "",
+            length: "",
+            dimension_uom: "cm",
+            item_type: "on",
+          },
+        ],
+        origin_city_code: warehouseProperties.city_code,
+        origin_city_name: warehouseProperties.city_name,
+        origin_postal_code: warehouseProperties.postal_code,
+        origin_subdistrict_code: warehouseProperties.subdistrict_code,
+        origin_subdistrict_name: warehouseProperties.subdistrict_name,
+        destination_city_code: this.shippingRecipientData.city,
+        destination_city_name: selectedDestinationCity.dataset.cityName,
+        destination_postal_code: this.shippingRecipientData.postalCode,
+        destination_subdistrict_code:
+          selectedDestinationSubdistrict.dataset.subdistrictCode,
+        destination_subdistrict_name:
+          selectedDestinationSubdistrict.dataset.subdistrictName,
+      };
+
+      const pricingList = (
+        await shipdeoService.getPricingList(this.shipdeo_access_token, reqBody)
+      ).data.data;
+
+      this.courierList = this.courierList.map((courier) => {
+        const currentServices = JSON.parse(courier.free_data1);
+        courier.serviceList = pricingList
+          .filter((pl) => currentServices.find((cs) => cs.code === pl.service))
+          .map((pl) => {
+            pl.name = currentServices.find((cs) => cs.code === pl.service).name;
+
+            return pl;
+          });
+
+        return courier;
+      });
+
+      this.paymentStep++;
+    },
     async getShipdeoAccess() {
       try {
         const tokenResponse = (await shipdeoService.getAccessToken()).data;
@@ -620,6 +732,100 @@ export default {
       } catch (err) {
         this.$func.showErrorSnackbar(err.message);
       }
+    },
+    submit() {
+      const selectedDestinationCity = document.querySelector(
+        "#selected-destination-city"
+      );
+      const selectedDestinationSubdistrict = document.querySelector(
+        "#selected-destination-subdistrict"
+      );
+      const warehouseProperties = JSON.parse(
+        this.shippingWarehouseData.free_data1
+      );
+
+      const reqBody = {
+        courier: "sicepat",
+        courier_service: "SIUNT",
+        order_number: "00001",
+        is_cod: false,
+        delivery_type: "pickup",
+        delivery_time: moment().format("DD/MM/yyyy hh:mm:ss A Z"),
+        is_send_company: true,
+        origin_lat: null,
+        origin_long: null,
+        origin_subdistrict_code: warehouseProperties.subdistrict_code,
+        origin_subdistrict_name: warehouseProperties.subdistrict_name,
+        origin_city_code: warehouseProperties.city_code,
+        origin_city_name: warehouseProperties.city_name,
+        origin_province_code: warehouseProperties.province_code,
+        origin_province_name: warehouseProperties.province_name,
+        origin_contact_name: "HENDAR",
+        origin_contact_phone: "081394449218",
+        origin_contact_address: "Kapung Cihaneut Desa Drawati Kec Paseh",
+        origin_contact_email: "hendar@clodeo.com",
+        origin_note: "Rumah Deket Masjid",
+        origin_postal_code: "40383",
+        destination_lat: null,
+        destination_long: null,
+        destination_subdistrict_code:
+          selectedDestinationSubdistrict.dataset.subdistrictCode,
+        destination_subdistrict_name:
+          selectedDestinationSubdistrict.dataset.subdistrictName,
+        destination_city_code: this.shippingRecipientData.city,
+        destination_city_name: selectedDestinationCity.dataset.cityName,
+        destination_province_code: selectedDestinationCity.dataset.provinceCode,
+        destination_province_name: selectedDestinationCity.dataset.provinceName,
+        destination_postal_code: this.shippingRecipientData.postalCode,
+        destination_contact_name: this.shippingRecipientData.name,
+        destination_contact_phone: this.shippingRecipientData.phone,
+        destination_contact_address: this.shippingRecipientData.address,
+        destination_contact_email: "",
+        destination_note: this.shippingRecipientData.note,
+        delivery_note: "",
+        items: [],
+        transaction: {
+          method_payment: "qris",
+          unique_code: 1,
+          customer_id: "ae46174d-4519-44e3-bede-6512f325b759",
+          event_id: "54a2507b-d85e-491e-b743-aeb801f8b450",
+          subtotal: 45012,
+          shipping_charge: 0,
+          fee_insurance: 0,
+          is_insuranced: false,
+          discount: 0,
+          total_value: 45012,
+          total_cod: 0,
+          weight: 1,
+          width: 10,
+          height: 10,
+          length: 10,
+          coolie: 10,
+          package_category: "NORMAL",
+          package_content: "Bluben supreme",
+        },
+      };
+
+      reqBody.items = this.productList.map((p) => {
+        const result = {
+          product_id: p.product_id,
+          name: p.title,
+          description: p.description,
+          weight: Number(p.weight) / 1000,
+          weight_uom: "kg",
+          qty: Number(p.qty),
+          value: Number(p.price),
+          width: Number(p.volume_width),
+          height: Number(p.volume_height),
+          length: Number(p.volume_length),
+          dimension_uom: "cm",
+          total_value: Number(p.qty) * Number(p.price),
+        };
+
+        return result;
+      });
+
+      console.log(reqBody);
     },
     prepareUI() {
       this.dropdownForm.selectCity = new TomSelect("#select-city", {
@@ -662,7 +868,13 @@ export default {
                     </div>`;
           },
           item: (data, escape) => {
-            return `<span>${escape(data.city_name)}</span>`;
+            return `<span
+              id="selected-destination-city"
+              data-city-name="${escape(data.city_name)}"
+              data-province-name="${escape(data.province.province_name)}"
+              data-province-code="${escape(
+                data.province.province_code
+              )}">${escape(data.city_name)}</span>`;
           },
         },
       });
@@ -706,7 +918,11 @@ export default {
                     </div>`;
             },
             item: (data, escape) => {
-              return `<span>${escape(data.village_name)}, ${escape(
+              return `<span
+                id="selected-destination-subdistrict"
+                data-subdistrict-code="${escape(data.subdistrict_code)}"
+                data-subdistrict-name="${escape(data.subdistrict_name)}"
+              >${escape(data.village_name)}, ${escape(
                 data.subdistrict_name
               )}, ${escape(data.postal_code)}</span>`;
             },
@@ -763,7 +979,12 @@ export default {
                     </div>`;
                 },
                 item: (data, escape) => {
-                  return `<span>${escape(data.village_name)}, ${escape(
+                  return `<span
+                id="selected-destination-subdistrict"
+                data-subdistrict-code="${escape(data.subdistrict_code)}"
+                data-subdistrict-name="${escape(
+                  data.subdistrict_name
+                )}">${escape(data.village_name)}, ${escape(
                     data.subdistrict_name
                   )}, ${escape(data.postal_code)}</span>`;
                 },
@@ -797,8 +1018,6 @@ export default {
         )
       ).data.products;
 
-      console.log("productList", productList);
-
       this.productList = productList
         .filter((p) => {
           const selectedProducts = JSON.parse(currentEvent.select_product);
@@ -810,6 +1029,14 @@ export default {
 
           return p;
         });
+
+      const addressResponse = (
+        await addressService.getCompanyShippingAddress(currentEvent.company_id)
+      ).data.shippingAddress;
+
+      this.shippingWarehouseData = addressResponse.find(
+        (address) => address.shipping_id === currentEvent.shipping_address
+      );
     } else {
       this.$func.back();
     }
