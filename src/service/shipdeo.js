@@ -1,4 +1,5 @@
 import axios from "axios"
+import AXIOS from "./server"
 
 const AXIOS_SHIPDEO = axios.create({
   baseURL: 'https://main-api-development.shipdeo.com/v1'
@@ -35,5 +36,8 @@ export default {
         "Authorization": "Bearer " + accessToken
       }
     });
+  },
+  createOrder(reqBody) {
+    return AXIOS.post('parameter/integration/v1/couriers/create-orders', reqBody);
   }
 }

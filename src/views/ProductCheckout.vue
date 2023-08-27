@@ -70,7 +70,9 @@
                 style="position: relative; right: 1rem; top: 10px"
               >
                 Alamat Pengirim<br />
-                -
+                <b class="text-container">
+                  {{ shippingRecipientData.address || "-" }}
+                </b>
               </div>
               <div class="col">
                 <img
@@ -121,7 +123,9 @@
                 style="position: relative; right: 1rem; top: 10px"
               >
                 Kurir/ Ekspedisi<br />
-                -
+                <b class="text-container">
+                  {{ courierService.split("|")[2] || "-" }}
+                </b>
               </div>
               <div class="col">
                 <img
@@ -175,7 +179,7 @@
                 }"
               >
                 Metode Pembayaran<br />
-                <b>Transfer</b>
+                <b class="text-container">Transfer</b>
               </div>
               <div class="col"></div>
             </a>
@@ -296,6 +300,8 @@
           id="offcanvasBottom1"
           aria-labelledby="offcanvasBottomLabel"
           style="height: 90vh"
+          data-bs-backdrop="static"
+          data-bs-keyboard="false"
         >
           <div class="card-header">
             <h3 style="margin: 2rem 6.5rem">Jasa Pengiriman</h3>
@@ -332,16 +338,41 @@
                 </h2>
                 <ul
                   :id="`collapse-${i + 1}`"
-                  class="accordion-collapse collapse"
+                  class="accordion-collapse collapse p-0"
                   data-bs-parent="#accordion-courier"
                   style=""
                 >
-                  <li v-for="(service, j) in courier.serviceList" :key="j">
-                    <input
-                      type="radio"
-                      :id="`${service.courierCode}__${service.service}`"
-                    />
-                    {{ service.name }}
+                  <li
+                    v-for="(service, j) in courier.serviceList"
+                    :key="j"
+                    style="list-style-type: none"
+                    class="d-flex justify-content-between align-items-center ps-5 pe-3 mb-2"
+                    @click="
+                      checkCourierService(service.courierCode, service.service)
+                    "
+                  >
+                    <div class="d-flex align-items-center">
+                      <input
+                        type="radio"
+                        name="courier-service"
+                        class="me-2"
+                        :id="`${service.courierCode}__${service.service}`"
+                        :data-service="service.service"
+                        :data-courier="service.courierCode"
+                        :data-display="`${courier.parameter_name} (${service.name})`"
+                      />
+                      <div>
+                        <p class="m-0">
+                          {{ service.name }}
+                        </p>
+                        <p class="m-0 text-muted" style="font-size: 0.75rem">
+                          {{ service.estimation || "" }}
+                        </p>
+                      </div>
+                    </div>
+                    <p class="m-0 text-end">
+                      {{ $func.formatAmount(service.price) }}
+                    </p>
                   </li>
                 </ul>
               </div>
@@ -359,8 +390,11 @@
               >
                 <div class="col-8">
                   <button
+                    @click="saveCourierData"
+                    type="button"
                     data-bs-dismiss="offcanvas"
                     class="btn"
+                    data-bs-toggle="modal"
                     data-bs-target="#modal-simple"
                     style="background-color: #1b9dfb; color: white; width: 100%"
                   >
@@ -378,6 +412,8 @@
           id="offcanvasBottom3"
           aria-labelledby="offcanvasBottomLabel"
           style="height: 30rem"
+          data-bs-backdrop="static"
+          data-bs-keyboard="false"
         >
           <div class="offcanvas-header">
             <h2 class="offcanvas-title" id="offcanvasBottomLabel">
@@ -449,6 +485,7 @@
             <hr />
             <div class="mt-3">
               <button
+                @click="saveMethodData"
                 class="btn btn-primary"
                 type="button"
                 data-bs-dismiss="offcanvas"
@@ -615,7 +652,10 @@ export default {
       isBusyAll: false,
       courierList: [],
       productList: [],
+      bankList: [],
       paymentStep: 1,
+      courierService: "",
+      method: "",
     };
   },
   computed: {
@@ -635,6 +675,9 @@ export default {
     },
     checkCourier(idx) {
       document.querySelector("#courier-" + idx).checked = true;
+    },
+    checkCourierService(courierCode, service) {
+      document.querySelector(`#${courierCode}__${service}`).checked = true;
     },
     decreaseQty(product_id) {
       this.productList = this.productList.map((p) => {
@@ -657,64 +700,95 @@ export default {
       });
     },
     async saveRecipientData() {
-      const selectedDestinationCity = document.querySelector(
-        "#selected-destination-city"
-      );
-      const selectedDestinationSubdistrict = document.querySelector(
-        "#selected-destination-subdistrict"
-      );
-      const warehouseProperties = JSON.parse(
-        this.shippingWarehouseData.free_data1
-      );
+      this.isBusyAll = true;
+      try {
+        const selectedDestinationCity = document.querySelector(
+          "#selected-destination-city"
+        );
+        const selectedDestinationSubdistrict = document.querySelector(
+          "#selected-destination-subdistrict"
+        );
+        const warehouseProperties = JSON.parse(
+          this.shippingWarehouseData.free_data1
+        );
 
-      const reqBody = {
-        couriers: ["sicepat", "anteraja", "ninja", "jnt", "jne", "sap", "sc"],
-        items: [
-          {
-            name: "",
-            description: "",
-            weight: "",
-            weight_uom: "gr",
-            qty: "",
-            value: "",
-            width: "",
-            height: "",
-            length: "",
-            dimension_uom: "cm",
-            item_type: "on",
-          },
-        ],
-        origin_city_code: warehouseProperties.city_code,
-        origin_city_name: warehouseProperties.city_name,
-        origin_postal_code: warehouseProperties.postal_code,
-        origin_subdistrict_code: warehouseProperties.subdistrict_code,
-        origin_subdistrict_name: warehouseProperties.subdistrict_name,
-        destination_city_code: this.shippingRecipientData.city,
-        destination_city_name: selectedDestinationCity.dataset.cityName,
-        destination_postal_code: this.shippingRecipientData.postalCode,
-        destination_subdistrict_code:
-          selectedDestinationSubdistrict.dataset.subdistrictCode,
-        destination_subdistrict_name:
-          selectedDestinationSubdistrict.dataset.subdistrictName,
-      };
+        const reqBody = {
+          couriers: ["sicepat", "anteraja", "ninja", "jnt", "jne", "sap", "sc"],
+          items: [
+            {
+              name: "",
+              description: "",
+              weight: "",
+              weight_uom: "gr",
+              qty: "",
+              value: "",
+              width: "",
+              height: "",
+              length: "",
+              dimension_uom: "cm",
+              item_type: "on",
+            },
+          ],
+          origin_city_code: warehouseProperties.city_code,
+          origin_city_name: warehouseProperties.city_name,
+          origin_postal_code: warehouseProperties.postal_code,
+          origin_subdistrict_code: warehouseProperties.subdistrict_code,
+          origin_subdistrict_name: warehouseProperties.subdistrict_name,
+          destination_city_code: this.shippingRecipientData.city,
+          destination_city_name: selectedDestinationCity.dataset.cityName,
+          destination_postal_code: selectedDestinationCity.dataset.postalCode,
+          destination_subdistrict_code:
+            selectedDestinationSubdistrict.dataset.subdistrictCode,
+          destination_subdistrict_name:
+            selectedDestinationSubdistrict.dataset.subdistrictName,
+        };
 
-      const pricingList = (
-        await shipdeoService.getPricingList(this.shipdeo_access_token, reqBody)
-      ).data.data;
+        const pricingList = (
+          await shipdeoService.getPricingList(
+            this.shipdeo_access_token,
+            reqBody
+          )
+        ).data.data;
 
-      this.courierList = this.courierList.map((courier) => {
-        const currentServices = JSON.parse(courier.free_data1);
-        courier.serviceList = pricingList
-          .filter((pl) => currentServices.find((cs) => cs.code === pl.service))
-          .map((pl) => {
-            pl.name = currentServices.find((cs) => cs.code === pl.service).name;
+        this.courierList = this.courierList.map((courier) => {
+          const currentServices = JSON.parse(courier.free_data1);
+          courier.serviceList = pricingList
+            .filter((pl) =>
+              currentServices.find((cs) => cs.code === pl.service)
+            )
+            .map((pl) => {
+              pl.name = currentServices.find(
+                (cs) => cs.code === pl.service
+              ).name;
 
-            return pl;
-          });
+              return pl;
+            });
 
-        return courier;
-      });
+          return courier;
+        });
 
+        this.paymentStep++;
+      } catch (err) {
+        console.error(err.message);
+      } finally {
+        this.isBusyAll = false;
+      }
+    },
+    saveCourierData() {
+      let selectedService = null;
+      document
+        .querySelectorAll('input[name="courier-service"]')
+        .forEach((input) => {
+          if (input.checked) {
+            selectedService = input;
+          }
+        });
+
+      this.courierService = `${selectedService.dataset.courier}|${selectedService.dataset.service}|${selectedService.dataset.display}`;
+      this.paymentStep++;
+    },
+    saveMethodData() {
+      this.method = "transfer";
       this.paymentStep++;
     },
     async getShipdeoAccess() {
@@ -733,99 +807,110 @@ export default {
         this.$func.showErrorSnackbar(err.message);
       }
     },
-    submit() {
-      const selectedDestinationCity = document.querySelector(
-        "#selected-destination-city"
-      );
-      const selectedDestinationSubdistrict = document.querySelector(
-        "#selected-destination-subdistrict"
-      );
-      const warehouseProperties = JSON.parse(
-        this.shippingWarehouseData.free_data1
-      );
+    async submit() {
+      this.isBusyAll = true;
+      try {
+        const selectedDestinationCity = document.querySelector(
+          "#selected-destination-city"
+        );
+        const selectedDestinationSubdistrict = document.querySelector(
+          "#selected-destination-subdistrict"
+        );
+        const warehouseProperties = JSON.parse(
+          this.shippingWarehouseData.free_data1
+        );
 
-      const reqBody = {
-        courier: "sicepat",
-        courier_service: "SIUNT",
-        order_number: "00001",
-        is_cod: false,
-        delivery_type: "pickup",
-        delivery_time: moment().format("DD/MM/yyyy hh:mm:ss A Z"),
-        is_send_company: true,
-        origin_lat: null,
-        origin_long: null,
-        origin_subdistrict_code: warehouseProperties.subdistrict_code,
-        origin_subdistrict_name: warehouseProperties.subdistrict_name,
-        origin_city_code: warehouseProperties.city_code,
-        origin_city_name: warehouseProperties.city_name,
-        origin_province_code: warehouseProperties.province_code,
-        origin_province_name: warehouseProperties.province_name,
-        origin_contact_name: "HENDAR",
-        origin_contact_phone: "081394449218",
-        origin_contact_address: "Kapung Cihaneut Desa Drawati Kec Paseh",
-        origin_contact_email: "hendar@clodeo.com",
-        origin_note: "Rumah Deket Masjid",
-        origin_postal_code: "40383",
-        destination_lat: null,
-        destination_long: null,
-        destination_subdistrict_code:
-          selectedDestinationSubdistrict.dataset.subdistrictCode,
-        destination_subdistrict_name:
-          selectedDestinationSubdistrict.dataset.subdistrictName,
-        destination_city_code: this.shippingRecipientData.city,
-        destination_city_name: selectedDestinationCity.dataset.cityName,
-        destination_province_code: selectedDestinationCity.dataset.provinceCode,
-        destination_province_name: selectedDestinationCity.dataset.provinceName,
-        destination_postal_code: this.shippingRecipientData.postalCode,
-        destination_contact_name: this.shippingRecipientData.name,
-        destination_contact_phone: this.shippingRecipientData.phone,
-        destination_contact_address: this.shippingRecipientData.address,
-        destination_contact_email: "",
-        destination_note: this.shippingRecipientData.note,
-        delivery_note: "",
-        items: [],
-        transaction: {
-          method_payment: "qris",
-          unique_code: 1,
-          customer_id: "ae46174d-4519-44e3-bede-6512f325b759",
-          event_id: "54a2507b-d85e-491e-b743-aeb801f8b450",
-          subtotal: 45012,
-          shipping_charge: 0,
-          fee_insurance: 0,
-          is_insuranced: false,
-          discount: 0,
-          total_value: 45012,
-          total_cod: 0,
-          weight: 1,
-          width: 10,
-          height: 10,
-          length: 10,
-          coolie: 10,
-          package_category: "NORMAL",
-          package_content: "Bluben supreme",
-        },
-      };
-
-      reqBody.items = this.productList.map((p) => {
-        const result = {
-          product_id: p.product_id,
-          name: p.title,
-          description: p.description,
-          weight: Number(p.weight) / 1000,
-          weight_uom: "kg",
-          qty: Number(p.qty),
-          value: Number(p.price),
-          width: Number(p.volume_width),
-          height: Number(p.volume_height),
-          length: Number(p.volume_length),
-          dimension_uom: "cm",
-          total_value: Number(p.qty) * Number(p.price),
+        const reqBody = {
+          courier: this.courierService.split("|")[0],
+          courier_service: this.courierService.split("|")[1],
+          order_number: "00001",
+          is_cod: false,
+          delivery_type: "pickup",
+          delivery_time: moment().format("DD/MM/yyyy hh:mm:ss A Z"),
+          is_send_company: true,
+          origin_lat: null,
+          origin_long: null,
+          origin_subdistrict_code: warehouseProperties.subdistrict_code,
+          origin_subdistrict_name: warehouseProperties.subdistrict_name,
+          origin_city_code: warehouseProperties.city_code,
+          origin_city_name: warehouseProperties.city_name,
+          origin_province_code: warehouseProperties.province_code,
+          origin_province_name: warehouseProperties.province_name,
+          origin_contact_name: this.shippingWarehouseData.from,
+          origin_contact_phone: this.shippingWarehouseData.phone_number,
+          origin_contact_address: this.shippingWarehouseData.street,
+          origin_contact_email: "",
+          origin_note: this.shippingWarehouseData.notes,
+          origin_postal_code: warehouseProperties.postal_code,
+          destination_lat: null,
+          destination_long: null,
+          destination_subdistrict_code:
+            selectedDestinationSubdistrict.dataset.subdistrictCode,
+          destination_subdistrict_name:
+            selectedDestinationSubdistrict.dataset.subdistrictName,
+          destination_city_code: this.shippingRecipientData.city,
+          destination_city_name: selectedDestinationCity.dataset.cityName,
+          destination_province_code:
+            selectedDestinationCity.dataset.provinceCode,
+          destination_province_name:
+            selectedDestinationCity.dataset.provinceName,
+          destination_postal_code: this.shippingRecipientData.postalCode,
+          destination_contact_name: this.shippingRecipientData.name,
+          destination_contact_phone: this.shippingRecipientData.phone,
+          destination_contact_address: this.shippingRecipientData.address,
+          destination_contact_email: "",
+          destination_note: this.shippingRecipientData.note,
+          delivery_note: "",
+          items: [],
+          transaction: {
+            method_payment: "qris",
+            unique_code: 1,
+            customer_id: "ae46174d-4519-44e3-bede-6512f325b759",
+            event_id: "54a2507b-d85e-491e-b743-aeb801f8b450",
+            subtotal: 45012,
+            shipping_charge: 0,
+            fee_insurance: 0,
+            is_insuranced: false,
+            discount: 0,
+            total_value: 45012,
+            total_cod: 0,
+            weight: 1,
+            width: 10,
+            height: 10,
+            length: 10,
+            coolie: 10,
+            package_category: "NORMAL",
+            package_content: "Bluben supreme",
+          },
         };
 
-        return result;
-      });
+        reqBody.items = this.productList.map((p) => {
+          const result = {
+            product_id: p.product_id,
+            name: p.title,
+            description: p.description,
+            weight: Number(p.weight) / 1000,
+            weight_uom: "kg",
+            qty: Number(p.qty),
+            value: Number(p.price),
+            width: Number(p.volume_width),
+            height: Number(p.volume_height),
+            length: Number(p.volume_length),
+            dimension_uom: "cm",
+            total_value: Number(p.qty) * Number(p.price),
+          };
 
-      console.log(reqBody);
+          return result;
+        });
+
+        const postResponse = (await shipdeoService.createOrder(reqBody)).data;
+
+        console.log(postResponse);
+      } catch (err) {
+        console.error(err.message);
+      } finally {
+        this.isBusyAll = false;
+      }
     },
     prepareUI() {
       this.dropdownForm.selectCity = new TomSelect("#select-city", {
@@ -882,8 +967,14 @@ export default {
       this.dropdownForm.selectSubdistrict = new TomSelect(
         "#select-subdistrict",
         {
-          valueField: "postal_code",
-          searchField: ["village_name", "subdistrict_name", "postal_code"],
+          valueField: "village_code",
+          searchField: [
+            "village_name",
+            "subdistrict_name",
+            "city_name",
+            "province_name",
+            "postal_code",
+          ],
           maxItems: 1,
           load: async (query, callback) => {
             try {
@@ -904,29 +995,59 @@ export default {
               callback();
             }
           },
+
           render: {
             option: function (data, escape) {
-              return `<div class="py-2">
-                      <div>
+              return `<div class="py-2 d-flex justify-content-between">
+                      <div class="text-black">
                         ${escape(data.village_name)}, ${escape(
                 data.subdistrict_name
-              )}, ${escape(data.postal_code)}
-                        <span class="text-muted small">${escape(
+              )}<br>
+                        <span class="text-muted">${escape(
                           data.city_name
-                        )}, ${data.province_name}</span>
+                        )} ${escape(data.province_name)}</span>
                       </div>
+                      <div>${escape(data.postal_code)}</div>
                     </div>`;
             },
             item: (data, escape) => {
-              return `<span
-                id="selected-destination-subdistrict"
+              return `<div id="selected-destination-subdistrict"
                 data-subdistrict-code="${escape(data.subdistrict_code)}"
                 data-subdistrict-name="${escape(data.subdistrict_name)}"
-              >${escape(data.village_name)}, ${escape(
-                data.subdistrict_name
-              )}, ${escape(data.postal_code)}</span>`;
+                data-postal-code="${escape(data.postal_code)}">${escape(
+                data.village_name
+              )}, ${escape(data.subdistrict_name)}, ${escape(
+                data.city_name
+              )}, ${escape(data.province_name)}, ${escape(
+                data.postal_code
+              )}</div>`;
             },
           },
+          // render: {
+          //   option: function (data, escape) {
+          //     return `<div class="py-2">
+          //             <div>
+          //               ${escape(data.village_name)}, ${escape(
+          //       data.subdistrict_name
+          //     )}, ${escape(data.postal_code)}<br />
+          //               <span class="text-muted small">${escape(
+          //                 data.city_name
+          //               )}, ${data.province_name}</span>
+          //             </div>
+          //           </div>`;
+          //   },
+          //   item: (data, escape) => {
+          //     return `<span
+          //       id="selected-destination-subdistrict"
+          //       data-subdistrict-code="${escape(data.subdistrict_code)}"
+          //       data-subdistrict-name="${escape(data.subdistrict_name)}"
+          //       data-postal-code="${escape(data.postal_code)}">${escape(
+          //       data.village_name
+          //     )}, ${escape(data.subdistrict_name)}, ${escape(
+          //       data.postal_code
+          //     )}</span>`;
+          //   },
+          // },
         }
       );
       this.dropdownForm.selectSubdistrict.disable();
@@ -943,8 +1064,14 @@ export default {
           this.dropdownForm.selectSubdistrict = new TomSelect(
             "#select-subdistrict",
             {
-              valueField: "postal_code",
-              searchField: ["village_name", "subdistrict_name", "postal_code"],
+              valueField: "village_code",
+              searchField: [
+                "village_name",
+                "subdistrict_name",
+                "city_name",
+                "province_name",
+                "postal_code",
+              ],
               maxItems: 1,
               load: async (query, callback) => {
                 try {
@@ -971,7 +1098,7 @@ export default {
                       <div>
                         ${escape(data.village_name)}, ${escape(
                     data.subdistrict_name
-                  )}, ${escape(data.postal_code)}
+                  )}, ${escape(data.postal_code)}<br />
                         <span class="text-muted small">${escape(
                           data.city_name
                         )}, ${data.province_name}</span>
@@ -982,11 +1109,12 @@ export default {
                   return `<span
                 id="selected-destination-subdistrict"
                 data-subdistrict-code="${escape(data.subdistrict_code)}"
-                data-subdistrict-name="${escape(
-                  data.subdistrict_name
-                )}">${escape(data.village_name)}, ${escape(
-                    data.subdistrict_name
-                  )}, ${escape(data.postal_code)}</span>`;
+                data-subdistrict-name="${escape(data.subdistrict_name)}"
+                data-postal-code="${escape(data.postal_code)}">${escape(
+                    data.village_name
+                  )}, ${escape(data.subdistrict_name)}, ${escape(
+                    data.postal_code
+                  )}</span>`;
                 },
               },
             }
@@ -997,8 +1125,11 @@ export default {
   },
   async mounted() {
     if (localStorage.getItem("event")) {
+      this.isBusyAll = true;
       const currentEvent = JSON.parse(this.$func.getFromLocalStorage("event"));
+      console.log("currentEvent", currentEvent);
       const courierList = JSON.parse(currentEvent.courier);
+      const bankList = currentEvent.bank_account.split(",");
 
       const companyCouriers = (
         await integrationService.getCompanyIntegrations(
@@ -1009,6 +1140,17 @@ export default {
 
       this.courierList = companyCouriers.filter(
         (courier) => courierList.indexOf(courier.integration_id) >= 0
+      );
+
+      const companyBanks = (
+        await integrationService.getCompanyIntegrations(
+          currentEvent.company_id,
+          "bank"
+        )
+      ).data.integrations;
+
+      this.bankList = companyBanks.filter(
+        (bank) => bankList.indexOf(bank.integration_id) >= 0
       );
 
       const productList = (
@@ -1037,6 +1179,8 @@ export default {
       this.shippingWarehouseData = addressResponse.find(
         (address) => address.shipping_id === currentEvent.shipping_address
       );
+
+      this.isBusyAll = false;
     } else {
       this.$func.back();
     }
@@ -1061,3 +1205,13 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+.text-container {
+  display: inline-block;
+  width: 25vw;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+</style>
