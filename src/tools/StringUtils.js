@@ -1,7 +1,21 @@
+const hash = require('hash.js');
 import Constants from './Constants';
 import CryptoJS from 'crypto-js';
 
 export default {
+  encryptSha256(str) {
+    try {
+        if (str == null) {
+            return null;
+        } else {
+            const result = hash.sha256().update(str).digest('hex');
+            // console.log(result);
+            return result;
+        }
+    } catch (e) {
+        return e;
+    }
+  },
   encryptAES(str) {
     try {
       if (!str) {

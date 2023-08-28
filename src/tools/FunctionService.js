@@ -5,6 +5,9 @@ export default {
   goTo(page) {
     Router.redirect(page);
   },
+  encryptSha256(str) {
+    return StringUtils.encryptSha256(str);
+  },
   back() {
     Router.back()
   },
@@ -20,4 +23,35 @@ export default {
   formatAmount(amount, countryCode = 'ID') {
     return StringUtils.formatAmount(amount, countryCode)
   },
+  showErrorSnackbar(msg) {
+    document.querySelector("#snackbar-popup").innerHTML = msg;
+    document.querySelector("#snackbar-popup").classList.add("show");
+    setTimeout(() => {
+      document.querySelector("#snackbar-popup").classList.remove("show");
+    }, 3000);
+  },
+  showSuccessSnackbar(msg) {
+    document.querySelector("#snackbar-popup-success").innerHTML = msg;
+    document.querySelector("#snackbar-popup-success").classList.add("show");
+    setTimeout(() => {
+      document.querySelector("#snackbar-popup-success").classList.remove("show");
+    }, 3000);
+  },
+  loading() {
+    document.querySelector("#application-loader").style.display = 'flex'
+  },
+  finishLoading() {
+    document.querySelector("#application-loader").style.display = 'none'
+  },
+  getLoginData() {
+    try {
+      if (!localStorage.getItem('login-data')) {
+        return null;
+      }
+  
+      return JSON.parse(this.getFromLocalStorage('login-data'));
+    } catch {
+      return null
+    }
+  }
 }

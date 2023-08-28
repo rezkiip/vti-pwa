@@ -1,7 +1,12 @@
 <template>
   <div id="app">
     <router-view />
-    <div id="snackbar-popup">Some text some message..</div>
+    <div id="snackbar-popup" class="snackbar-popup">
+      Some text some message..
+    </div>
+    <div id="snackbar-popup-success" class="snackbar-popup">
+      Some text some message..
+    </div>
   </div>
 </template>
 
@@ -54,11 +59,9 @@ export default {
   }
 }
 
-#snackbar-popup {
+.snackbar-popup {
   visibility: hidden;
   min-width: 250px;
-  margin-left: -125px;
-  background-color: red;
   color: #fff;
   text-align: center;
   border-radius: 2px;
@@ -68,12 +71,21 @@ export default {
   left: 50%;
   bottom: 30px;
   font-size: 17px;
+  transform: translate(-50%, 0);
 }
 
-#snackbar-popup.show {
+.snackbar-popup.show {
   visibility: visible;
   -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
   animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+#snackbar-popup {
+  background-color: red;
+}
+
+#snackbar-popup-success {
+  background-color: green;
 }
 
 @-webkit-keyframes fadein {

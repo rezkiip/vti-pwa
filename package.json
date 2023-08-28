@@ -16,6 +16,7 @@
     "moment": "^2.29.4",
     "tom-select": "^2.0.3",
     "vue": "^2.6.11",
+    "vue-loading-overlay": "^3.4.3",
     "vue-router": "^3.2.0",
     "vuex": "^3.4.0"
   },

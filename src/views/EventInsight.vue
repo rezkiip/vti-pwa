@@ -1215,7 +1215,7 @@
                 href="#"
                 class="btn"
                 data-bs-toggle="modal"
-                data-bs-target="#modal-simple"
+                data-bs-target="#modal-registration"
                 style="background-color: #1b9dfb; color: white; width: 100%"
               >
                 REGISTRASI
@@ -1282,20 +1282,26 @@
     <!-- Register Modal  -->
     <div
       class="modal modal-blur fade"
-      id="modal-simple"
+      id="modal-registration"
       tabindex="-1"
       role="dialog"
       aria-hidden="true"
+      data-bs-backdrop="static"
+      data-bs-keyboard="false"
+      ref="modalRegistration"
     >
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
           <div class="modal-header r">
-            <h5 class="modal-title">Daftar / Login Untuk Melanjutkan</h5>
+            <h5 class="modal-title">
+              {{ isRegistration ? "Daftar" : "Login" }}
+            </h5>
             <button
               type="button"
               class="btn-close"
               data-bs-dismiss="modal"
               aria-label="Close"
+              ref="closeRegistrationModal"
             ></button>
           </div>
           <div class="modal-body text-center">
@@ -1305,36 +1311,111 @@
               height="70rem"
               style="margin: 1rem 0 2rem 0"
             />
-            <form>
+            <form
+              @submit.prevent="register"
+              ref="registrationForm"
+              v-if="isRegistration"
+            >
               <input
                 type="text"
-                class="form-control"
+                autocomplete="off"
+                class="form-control mb-2"
+                name="example-text-input"
+                placeholder="Nama"
+                :disabled="confirmRegister"
+                v-model="registration.name"
+              />
+              <input
+                type="text"
+                autocomplete="off"
+                class="form-control mb-2"
                 name="example-text-input"
                 placeholder="Email/Username"
+                :disabled="confirmRegister"
+                v-model="registration.email"
               />
               <input
                 type="text"
-                class="form-control"
+                autocomplete="off"
+                class="form-control mb-2"
+                name="example-text-input"
+                placeholder="No Handphone"
+                :disabled="confirmRegister"
+                v-model="registration.phone"
+              />
+              <input
+                type="password"
+                class="form-control mb-2"
                 name="example-text-input"
                 placeholder="Password"
+                :disabled="confirmRegister"
+                v-model="registration.password"
               />
+              <input
+                v-if="confirmRegister"
+                v-model="registration.confirmationPassword"
+                type="password"
+                class="form-control mb-2"
+                name="example-text-input"
+                placeholder="Ulangi Password"
+              />
+              <a href="#" class="d-inline-block mt-3">Lupa Password?</a>
               <br />
-              <a href="#">Lupa Password?</a>
-              <br />
+              Sudah punya akun? Silakan
               <a
-                @click.prevent="login"
-                data-bs-toggle="modal"
-                data-bs-target="#modal-simple2"
-                type="button"
+                @click.prevent="isRegistration = !isRegistration"
+                class="d-inline-block mt-3"
+                >login</a
+              >
+              <br />
+              <button
+                type="submit"
                 class="btn btn-primary"
-                data-bs-dismiss="modal"
                 style="
                   margin: 5rem 0 0.5rem 0;
                   padding: 0.5rem 1rem;
                   background-color: #1b9dfb;
                 "
-                >MASUK / DAFTAR</a
               >
+                DAFTAR
+              </button>
+            </form>
+            <form @submit.prevent="login" ref="loginForm" v-else>
+              <input
+                type="text"
+                autocomplete="off"
+                class="form-control mb-2"
+                name="example-text-input"
+                placeholder="Email/Username"
+                :disabled="confirmRegister"
+                v-model="loginData.username"
+              />
+              <input
+                type="password"
+                class="form-control mb-2"
+                name="example-text-input"
+                placeholder="Password"
+                :disabled="confirmRegister"
+                v-model="loginData.password"
+              />
+              Belum punya akun? Silakan
+              <a
+                @click.prevent="isRegistration = !isRegistration"
+                class="d-inline-block mt-3"
+                >daftar</a
+              >
+              <br />
+              <button
+                type="submit"
+                class="btn btn-primary"
+                style="
+                  margin: 5rem 0 0.5rem 0;
+                  padding: 0.5rem 1rem;
+                  background-color: #1b9dfb;
+                "
+              >
+                MASUK
+              </button>
             </form>
           </div>
         </div>
@@ -1349,6 +1430,7 @@ import templateService from "@/service/template";
 import IMask from "imask";
 import Vue from "vue";
 import SplashScreen from "../components/SplashScreen.vue";
+import accountService from "@/service/account";
 
 export default {
   name: "EventInsight",
@@ -1360,6 +1442,19 @@ export default {
       productList: [],
       regFormList: [],
       subFormList: [],
+      confirmRegister: false,
+      isRegistration: true,
+      registration: {
+        name: "",
+        email: "",
+        phone: "",
+        password: "",
+        confirmationPassword: "",
+      },
+      loginData: {
+        username: "",
+        password: "",
+      },
     };
   },
   computed: {
@@ -1395,12 +1490,107 @@ export default {
       );
       this.$func.goTo("/about-event");
     },
-    login() {
-      this.$func.saveToLocalStorage(
-        "registration-form-list",
-        JSON.stringify(this.regFormList)
-      );
-      this.$func.goTo("/registration-form");
+    async register() {
+      this.$func.loading();
+      try {
+        if (!this.confirmRegister) {
+          if (!this.registration.name) {
+            throw new Error("Nama harus diisi");
+          }
+
+          if (!this.registration.email) {
+            throw new Error("Email harus diisi");
+          }
+
+          if (!this.registration.phone) {
+            throw new Error("No handphone harus diisi");
+          }
+
+          if (!this.registration.name) {
+            throw new Error("Password harus diisi");
+          }
+
+          this.confirmRegister = true;
+        } else {
+          if (!this.registration.confirmationPassword) {
+            throw new Error("Password konfirmasi harus diisi");
+          }
+
+          if (this.registration.confirmationPassword !== this.registration.password) {
+            throw new Error("Password konfirmasi salah");
+          }
+
+          const reqBody = {
+            name_customer: this.registration.name,
+            address: "",
+            phone_number: this.registration.phone,
+            gender: "",
+            city: "",
+            identity_type: "",
+            nik: "",
+            province: "",
+            district: "",
+            username: this.registration.email,
+            password: this.$func.encryptSha256(this.registration.password),
+            avatar: "",
+            postal_code: "",
+            email: this.registration.email,
+          };
+
+          (await accountService.register(reqBody)).data;
+
+          // this.$refs.closeRegistrationModal.click();
+          this.isRegistration = false;
+          this.confirmRegister = false;
+          this.$func.showSuccessSnackbar(
+            "Registrasi berhasil, silakan login kembali"
+          );
+        }
+      } catch (err) {
+        this.$func.showErrorSnackbar(err.message);
+      } finally {
+        this.$func.finishLoading();
+      }
+    },
+    async login() {
+      this.$func.loading();
+      try {
+        if (!this.loginData.username) {
+          throw new Error("Username harus diisi");
+        }
+
+        if (!this.loginData.password) {
+          throw new Error("Password harus diisi");
+        }
+
+        const reqBody = {
+          username: this.loginData.username,
+          password: this.$func.encryptSha256(this.loginData.password),
+        };
+
+        const loginResponse = await accountService.login(reqBody);
+
+        if (loginResponse.status !== 200) {
+          throw new Error(loginResponse.statusText);
+        }
+
+        this.$refs.closeRegistrationModal.click();
+        this.$func.showSuccessSnackbar("Login berhasil");
+        this.$func.saveToLocalStorage(
+          "login-data",
+          JSON.stringify(loginResponse.data)
+        );
+
+        this.$func.saveToLocalStorage(
+          "registration-form-list",
+          JSON.stringify(this.regFormList)
+        );
+        this.$func.goTo("/registration-form");
+      } catch (err) {
+        this.$func.showErrorSnackbar(err.message);
+      } finally {
+        this.$func.finishLoading();
+      }
     },
     async getBrandProducts() {
       const productList = (
@@ -1504,6 +1694,12 @@ export default {
             },
           });
         }
+      });
+
+      this.$refs.modalRegistration.addEventListener("hidden.bs.modal", () => {
+        this.confirmRegister = false;
+        this.isRegistration = true;
+        this.$refs.registrationForm.reset();
       });
     },
   },

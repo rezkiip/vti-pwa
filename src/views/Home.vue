@@ -4,16 +4,31 @@
     <transition name="fade" mode="out-in">
       <router-view />
     </transition>
+    <VueLoading
+      color="#48B0FC"
+      lock-scroll
+      :active="true"
+      :can-cancel="false"
+      :is-full-page="true"
+      :width="60"
+      loader="spinner"
+      transition="none"
+      id="application-loader"
+      style="display: none"
+    />
   </div>
 </template>
 
 <script>
 import Header from "@/components/Header";
+import VueLoading from "vue-loading-overlay";
+import "vue-loading-overlay/dist/vue-loading.css";
 
 export default {
   name: "Home",
   components: {
     Header,
+    VueLoading,
   },
 };
 </script>

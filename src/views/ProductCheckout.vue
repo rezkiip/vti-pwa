@@ -700,7 +700,7 @@ export default {
       });
     },
     async saveRecipientData() {
-      this.isBusyAll = true;
+      this.$func.loading();
       try {
         const selectedDestinationCity = document.querySelector(
           "#selected-destination-city"
@@ -771,7 +771,7 @@ export default {
       } catch (err) {
         console.error(err.message);
       } finally {
-        this.isBusyAll = false;
+        this.$func.finishLoading();
       }
     },
     saveCourierData() {
@@ -808,7 +808,7 @@ export default {
       }
     },
     async submit() {
-      this.isBusyAll = true;
+      this.$func.loading();
       try {
         const selectedDestinationCity = document.querySelector(
           "#selected-destination-city"
@@ -818,6 +818,10 @@ export default {
         );
         const warehouseProperties = JSON.parse(
           this.shippingWarehouseData.free_data1
+        );
+        const loginData = this.$func.getLoginData();
+        const currentEvent = JSON.parse(
+          this.$func.getFromLocalStorage("event")
         );
 
         const reqBody = {
@@ -858,15 +862,15 @@ export default {
           destination_contact_name: this.shippingRecipientData.name,
           destination_contact_phone: this.shippingRecipientData.phone,
           destination_contact_address: this.shippingRecipientData.address,
-          destination_contact_email: "",
+          destination_contact_email: loginData.customer.email,
           destination_note: this.shippingRecipientData.note,
           delivery_note: "",
           items: [],
           transaction: {
             method_payment: "qris",
             unique_code: 1,
-            customer_id: "ae46174d-4519-44e3-bede-6512f325b759",
-            event_id: "54a2507b-d85e-491e-b743-aeb801f8b450",
+            customer_id: loginData.customer.customer_id,
+            event_id: currentEvent.event_id,
             subtotal: 45012,
             shipping_charge: 0,
             fee_insurance: 0,
@@ -909,7 +913,7 @@ export default {
       } catch (err) {
         console.error(err.message);
       } finally {
-        this.isBusyAll = false;
+        this.$func.finishLoading();
       }
     },
     prepareUI() {
@@ -1051,6 +1055,13 @@ export default {
         }
       );
       this.dropdownForm.selectSubdistrict.disable();
+
+      const loginData = this.$func.getLoginData();
+
+      if (!!loginData) {
+        this.shippingRecipientData.name = loginData.customer.name_customer;
+        this.shippingRecipientData.phone = loginData.customer.phone_number;
+      }
     },
   },
   watch: {
