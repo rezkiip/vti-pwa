@@ -7,4 +7,7 @@ export default {
   login(reqBody) {
     return AXIOS.post('customer/login', reqBody)
   },
+  addParticipant(reqBody) {
+    return AXIOS.post('participant/create', reqBody)
+  }
 }

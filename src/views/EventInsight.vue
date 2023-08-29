@@ -1516,7 +1516,10 @@ export default {
             throw new Error("Password konfirmasi harus diisi");
           }
 
-          if (this.registration.confirmationPassword !== this.registration.password) {
+          if (
+            this.registration.confirmationPassword !==
+            this.registration.password
+          ) {
             throw new Error("Password konfirmasi salah");
           }
 
@@ -1537,7 +1540,11 @@ export default {
             email: this.registration.email,
           };
 
-          (await accountService.register(reqBody)).data;
+          const registrationResponse = await accountService.register(reqBody);
+
+          if (!this.$func.isSuccessStatus(registrationResponse.status)) {
+            throw new Error(registrationResponse.statusText);
+          }
 
           // this.$refs.closeRegistrationModal.click();
           this.isRegistration = false;
@@ -1570,7 +1577,7 @@ export default {
 
         const loginResponse = await accountService.login(reqBody);
 
-        if (loginResponse.status !== 200) {
+        if (!this.$func.isSuccessStatus(loginResponse.status)) {
           throw new Error(loginResponse.statusText);
         }
 

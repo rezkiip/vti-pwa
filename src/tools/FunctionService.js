@@ -23,6 +23,11 @@ export default {
   formatAmount(amount, countryCode = 'ID') {
     return StringUtils.formatAmount(amount, countryCode)
   },
+  isSuccessStatus(status) {
+    const validationRegex = /^2\d{2}$/;
+    
+    return validationRegex.test(status.toString())
+  },
   showErrorSnackbar(msg) {
     document.querySelector("#snackbar-popup").innerHTML = msg;
     document.querySelector("#snackbar-popup").classList.add("show");

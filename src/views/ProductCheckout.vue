@@ -624,6 +624,7 @@ import TomSelect from "tom-select";
 import shipdeoService from "@/service/shipdeo";
 import integrationService from "@/service/integration";
 import addressService from "@/service/address";
+import accountService from "@/service/account";
 import moment from "moment";
 import Vue from "vue";
 import SplashScreen from "../components/SplashScreen.vue";
@@ -743,16 +744,18 @@ export default {
             selectedDestinationSubdistrict.dataset.subdistrictName,
         };
 
-        const pricingList = (
-          await shipdeoService.getPricingList(
-            this.shipdeo_access_token,
-            reqBody
-          )
-        ).data.data;
+        const pricingList = await shipdeoService.getPricingList(
+          this.shipdeo_access_token,
+          reqBody
+        );
+
+        if (!this.$func.isSuccessStatus(pricingList.status)) {
+          throw new Error(pricingList.statusText);
+        }
 
         this.courierList = this.courierList.map((courier) => {
           const currentServices = JSON.parse(courier.free_data1);
-          courier.serviceList = pricingList
+          courier.serviceList = pricingList.data.data
             .filter((pl) =>
               currentServices.find((cs) => cs.code === pl.service)
             )
@@ -793,7 +796,11 @@ export default {
     },
     async getShipdeoAccess() {
       try {
-        const tokenResponse = (await shipdeoService.getAccessToken()).data;
+        const tokenResponse = await shipdeoService.getAccessToken();
+
+        if (!this.$func.isSuccessStatus(tokenResponse.status)) {
+          throw new Error(tokenResponse.statusText);
+        }
 
         this.shipdeo_access_token = tokenResponse.accessToken;
         this.shipdeo_access_token_expires_at =
@@ -823,6 +830,16 @@ export default {
         const currentEvent = JSON.parse(
           this.$func.getFromLocalStorage("event")
         );
+
+        // add participant
+        const participantResponse = await accountService.addParticipant({
+          customer_id: loginData.customer.customer_id,
+          event_id: currentEvent.event_id,
+        });
+
+        if (!this.$func.isSuccessStatus(participantResponse.status)) {
+          throw new Error(participantResponse.statusText);
+        }
 
         const reqBody = {
           courier: this.courierService.split("|")[0],
@@ -907,11 +924,15 @@ export default {
           return result;
         });
 
-        const postResponse = (await shipdeoService.createOrder(reqBody)).data;
+        const postResponse = await shipdeoService.createOrder(reqBody);
+
+        if (!this.$func.isSuccessStatus(postResponse.status)) {
+          throw new Error(postResponse.statusText);
+        }
 
         console.log(postResponse);
       } catch (err) {
-        console.error(err.message);
+        this.$func.showErrorSnackbar(err.message);
       } finally {
         this.$func.finishLoading();
       }
