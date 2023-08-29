@@ -6,4 +6,7 @@ export default {
       company_id, brand_id, page, size
     })
   },
+  createInvoice(reqBody) {
+    return AXIOS.post('transaction/create', reqBody)
+  }
 }

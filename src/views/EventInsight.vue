@@ -1592,6 +1592,10 @@ export default {
           "registration-form-list",
           JSON.stringify(this.regFormList)
         );
+        this.$func.saveToLocalStorage(
+          "event",
+          JSON.stringify(this.currentEvent)
+        );
         this.$func.goTo("/registration-form");
       } catch (err) {
         this.$func.showErrorSnackbar(err.message);

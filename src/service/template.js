@@ -8,4 +8,7 @@ export default {
       page, size
     });
   },
+  submitFormRegistration(reqBody) {
+    return AXIOS.post('participant/createTemplate', reqBody)
+  }
 }

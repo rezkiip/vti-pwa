@@ -24,8 +24,10 @@
                 <input
                   type="text"
                   id="floating-text"
-                  class="form-control"
+                  class="form-control reg-form"
                   autocomplete="off"
+                  :data-id="regForm.template_id"
+                  :data-question="regForm.question_type"
                 />
                 <label for="floating-text"
                   >{{ regForm.question }}
@@ -40,8 +42,10 @@
               >
                 <textarea
                   id="floating-textarea"
-                  class="form-control"
+                  class="form-contro reg-form"
                   data-bs-toggle="autosize"
+                  :data-id="regForm.template_id"
+                  :data-question="regForm.question_type"
                 ></textarea>
                 <label for="floating-textarea"
                   >{{ regForm.question }}
@@ -68,8 +72,11 @@
                     <input
                       name="radio"
                       :data-option="i"
-                      class="form-check-input"
+                      class="form-check-input reg-form"
                       type="radio"
+                      :value="option"
+                      :data-id="regForm.template_id"
+                      :data-question="regForm.question_type"
                     />
                     <span class="form-check-label" v-text="option"></span>
                   </label>
@@ -93,8 +100,11 @@
                     <input
                       name="checkbox"
                       :data-option="i"
-                      class="form-check-input"
+                      class="form-check-input reg-form"
                       type="checkbox"
+                      :value="option"
+                      :data-id="regForm.template_id"
+                      :data-question="regForm.question_type"
                     />
                     <span class="form-check-label" v-text="option"></span>
                   </label>
@@ -104,7 +114,12 @@
                 class="form-floating mb-3"
                 v-else-if="regForm.question_type === 'Dropdown'"
               >
-                <select type="text" class="form-select">
+                <select
+                  type="text"
+                  class="form-select reg-form"
+                  :data-id="regForm.template_id"
+                  :data-question="regForm.question_type"
+                >
                   <option
                     v-for="(option, i) in JSON.parse(regForm.free_data1)"
                     :key="i"
@@ -131,8 +146,14 @@
                 v-else-if="regForm.question_type === 'File Upload'"
               >
                 <div class="card-body">
-                  <input type="file" id="floating-file-upload" />
-                  <label for="floating-file-upload"
+                  <input
+                    type="file"
+                    :id="`floating-file-upload-${k}`"
+                    class="reg-form"
+                    :data-id="regForm.template_id"
+                    :data-question="regForm.question_type"
+                  />
+                  <label :for="`floating-file-upload-${k}`"
                     >{{ regForm.question }}
                     <span style="color: red" v-if="regForm.required === 'Y'"
                       >*</span
@@ -141,31 +162,35 @@
                 </div>
               </div>
               <div class="mb-3" v-else-if="regForm.question_type === 'Date'">
-                <label for="floating-date"
+                <label :for="`floating-date-${k}`"
                   >{{ regForm.question }}
                   <span style="color: red" v-if="regForm.required === 'Y'"
                     >*</span
                   ></label
                 >
                 <input
-                  id="floating-date"
-                  class="form-control w-50 input-registration-date"
+                  :id="`floating-date-${k}`"
+                  class="form-control w-50 input-registration-date reg-form"
                   placeholder="DD/MM/YYYY"
                   :data-first="JSON.parse(regForm.validation).yearRangeValue[0]"
                   :data-last="JSON.parse(regForm.validation).yearRangeValue[1]"
+                  :data-id="regForm.template_id"
+                  :data-question="regForm.question_type"
                 />
               </div>
               <div class="mb-3" v-else-if="regForm.question_type === 'Time'">
-                <label for="floating-time"
+                <label :for="`floating-time-${k}`"
                   >{{ regForm.question }}
                   <span style="color: red" v-if="regForm.required === 'Y'"
                     >*</span
                   ></label
                 >
                 <input
-                  id="floating-time"
-                  class="form-control w-25 input-registration-time"
+                  :id="`floating-time-${k}`"
+                  class="form-control w-25 input-registration-time reg-form"
                   placeholder="00:00"
+                  :data-id="regForm.template_id"
+                  :data-question="regForm.question_type"
                 />
               </div>
             </div>
@@ -203,17 +228,88 @@
 <script>
 import IMask from "imask";
 import Vue from "vue";
+import templateService from "@/service/template";
 
 export default {
   name: "RegistrationForm",
   data() {
     return {
       regFormList: [],
+      currentEvent: {},
     };
   },
   methods: {
-    submit() {
-      this.$func.goTo("/product-checkout");
+    async submit() {
+      this.$func.loading();
+      try {
+        const regFormElementList = Array.from(
+          document.querySelectorAll(".reg-form")
+        )
+          .filter((regForm) => {
+            if (
+              regForm.dataset.question === "Multiple Choice" ||
+              regForm.dataset.question === "Single Choice"
+            ) {
+              return regForm.checked;
+            }
+
+            return !!regForm.value;
+          })
+          .map((regForm) => ({
+            template_id: regForm.dataset.id,
+            answer: regForm.value,
+          }));
+
+        for (const availableForm of this.regFormList) {
+          if (
+            availableForm.required === "Y" &&
+            regFormElementList
+              .map((regForm) => regForm.template_id)
+              .indexOf(availableForm.template_id) < 0
+          ) {
+            throw new Error(`Form ${availableForm.template_name} wajib diisi`);
+          }
+        }
+
+        for (const regForm of regFormElementList) {
+          const availableForm = this.regFormList.find(
+            (form) => form.template_id === regForm.template_id
+          );
+
+          if (availableForm.question_type === "Short Answer") {
+            const validation = JSON.parse(availableForm.validation);
+
+            if (validation.number === "Y" && isNaN(regForm.answer)) {
+              throw new Error(
+                `Form ${availableForm.template_name} harus berupa angka`
+              );
+            }
+          }
+        }
+
+        const loginData = this.$func.getLoginData();
+        const reqBody = {
+          customer_id: loginData.customer.customer_id,
+          event_id: this.currentEvent.event_id,
+          templates: regFormElementList,
+        };
+
+        const submissionResponse = await templateService.submitFormRegistration(
+          reqBody
+        );
+
+        console.log(submissionResponse);
+
+        if (!this.$func.isSuccessStatus(submissionResponse.status)) {
+          throw new Error(submissionResponse.statusText);
+        }
+
+        this.$func.goTo("/product-checkout");
+      } catch (err) {
+        this.$func.showErrorSnackbar(err.message);
+      } finally {
+        this.$func.finishLoading();
+      }
     },
     prepareUI() {
       Vue.nextTick(() => {
@@ -275,10 +371,14 @@ export default {
     },
   },
   mounted() {
-    if (localStorage.getItem("registration-form-list")) {
+    if (
+      localStorage.getItem("registration-form-list") &&
+      localStorage.getItem("event")
+    ) {
       this.regFormList = JSON.parse(
         this.$func.getFromLocalStorage("registration-form-list")
       );
+      this.currentEvent = JSON.parse(this.$func.getFromLocalStorage("event"));
 
       this.prepareUI();
     } else {
