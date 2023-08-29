@@ -12,7 +12,7 @@ AXIOS.interceptors.response.use(function (response) {
   return response
 }, function (error) {
   error.status = error.response.status;
-  error.statusText = error.response.data.message || error.response.statusText;
+  error.statusText = error.response.data.message || error.response.data.error || error.response.statusText;
 
   return error
 })

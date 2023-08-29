@@ -837,7 +837,10 @@ export default {
           event_id: currentEvent.event_id,
         });
 
-        if (!this.$func.isSuccessStatus(participantResponse.status)) {
+        if (
+          !this.$func.isSuccessStatus(participantResponse.status) &&
+          participantResponse.statusText !== "Anda sudah terdaftar"
+        ) {
           throw new Error(participantResponse.statusText);
         }
 
