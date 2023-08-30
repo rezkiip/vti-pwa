@@ -630,7 +630,6 @@ import TomSelect from "tom-select";
 import shipdeoService from "@/service/shipdeo";
 import integrationService from "@/service/integration";
 import addressService from "@/service/address";
-import accountService from "@/service/account";
 import moment from "moment";
 import Vue from "vue";
 import SplashScreen from "../components/SplashScreen.vue";
@@ -863,19 +862,6 @@ export default {
         const currentEvent = JSON.parse(
           this.$func.getFromLocalStorage("event")
         );
-
-        // add participant
-        const participantResponse = await accountService.addParticipant({
-          customer_id: loginData.customer.customer_id,
-          event_id: currentEvent.event_id,
-        });
-
-        if (
-          !this.$func.isSuccessStatus(participantResponse.status) &&
-          participantResponse.statusText !== "Anda sudah terdaftar"
-        ) {
-          throw new Error(participantResponse.statusText);
-        }
 
         const reqBody = {
           courier: this.courierService.split("|")[0],

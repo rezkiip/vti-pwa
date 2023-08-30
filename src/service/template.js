@@ -10,5 +10,8 @@ export default {
   },
   submitFormRegistration(reqBody) {
     return AXIOS.post('participant/createTemplate', reqBody)
+  },
+  checkRegistrationStatus(reqBody) {
+    return AXIOS.post('participant/statusTemplate', reqBody)
   }
 }

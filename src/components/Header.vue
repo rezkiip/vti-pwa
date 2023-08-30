@@ -3,7 +3,7 @@
     <div class="container">
       <span
         class="navbar-brand mb-0 h1"
-        @click="$func.back()"
+        @click="back"
         v-if="$route.path !== '/'"
       >
         <svg
@@ -98,6 +98,18 @@
 <script>
 export default {
   name: "Header",
+  methods: {
+    back() {
+      if (
+        this.$route.path === "/product-checkout" &&
+        this.$func.getLoginData().submittedRegistrationForm
+      ) {
+        this.$func.goTo("/event-insight");
+      } else {
+        this.$func.back();
+      }
+    },
+  },
 };
 </script>
 

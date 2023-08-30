@@ -1212,13 +1212,11 @@
 
             <div>
               <a
-                href="#"
+                @click.prevent="handleCtaBtn"
                 class="btn"
-                data-bs-toggle="modal"
-                data-bs-target="#modal-registration"
                 style="background-color: #1b9dfb; color: white; width: 100%"
               >
-                REGISTRASI
+                {{ ctaText }}
               </a>
             </div>
             <br />
@@ -1431,6 +1429,7 @@ import IMask from "imask";
 import Vue from "vue";
 import SplashScreen from "../components/SplashScreen.vue";
 import accountService from "@/service/account";
+import { Modal } from "bootstrap";
 
 export default {
   name: "EventInsight",
@@ -1444,6 +1443,10 @@ export default {
       subFormList: [],
       confirmRegister: false,
       isRegistration: true,
+      participantStatus: {
+        loggedIn: false,
+        submittedRegistrationForm: false,
+      },
       registration: {
         name: "",
         email: "",
@@ -1458,6 +1461,28 @@ export default {
     };
   },
   computed: {
+    ctaText() {
+      if (this.participantStatus.submittedRegistrationForm) {
+        return "CHECKOUT PRODUK";
+      }
+
+      if (this.participantStatus.loggedIn) {
+        return "LENGKAPI FORM REGISTRASI";
+      }
+
+      return "REGISTRASI/MASUK";
+    },
+    ctaRedirectPath() {
+      if (this.participantStatus.submittedRegistrationForm) {
+        return "/product-checkout";
+      }
+
+      if (this.participantStatus.loggedIn) {
+        return "/registration-form";
+      }
+
+      return "";
+    },
     freeData1() {
       try {
         return JSON.parse(this.currentEvent.free_data1);
@@ -1483,6 +1508,17 @@ export default {
     },
   },
   methods: {
+    handleCtaBtn() {
+      if (
+        !this.participantStatus.loggedIn &&
+        !this.participantStatus.submittedRegistrationForm
+      ) {
+        const modal = new Modal("#modal-registration");
+        modal.show();
+      }
+
+      this.$func.goTo(this.ctaRedirectPath);
+    },
     getEventAbout() {
       this.$func.saveToLocalStorage(
         "submission-form-list",
@@ -1649,6 +1685,48 @@ export default {
         return selectedTemplates.indexOf(t.template_id) >= 0;
       });
     },
+    async checkParticipantStatus() {
+      const loginData = this.$func.getLoginData();
+
+      if (loginData) {
+        this.participantStatus.loggedIn = true;
+
+        if (this.currentEvent.form_registration === "Y") {
+          try {
+            const reqBody = {
+              customer_id: loginData.customer.customer_id,
+              event_id: this.currentEvent.event_id,
+            };
+
+            const inquiryResponse =
+              await templateService.checkRegistrationStatus(reqBody);
+
+            if (!this.$func.isSuccessStatus(inquiryResponse.status)) {
+              throw new Error(inquiryResponse.statusText);
+            }
+
+            if (inquiryResponse.data.status === "Y") {
+              this.participantStatus.submittedRegistrationForm = true;
+
+              loginData.submittedRegistrationForm = true;
+              this.$func.saveToLocalStorage(
+                "login-data",
+                JSON.stringify(loginData)
+              );
+            }
+          } catch (err) {
+            this.$func.showErrorSnackbar(err.message);
+          }
+        } else {
+          this.participantStatus.submittedRegistrationForm = true;
+          loginData.submittedRegistrationForm = true;
+          this.$func.saveToLocalStorage(
+            "login-data",
+            JSON.stringify(loginData)
+          );
+        }
+      }
+    },
     prepareUI() {
       Vue.nextTick(() => {
         for (const inputRegDate of document.querySelectorAll(
@@ -1719,6 +1797,7 @@ export default {
       this.currentEvent = JSON.parse(this.$func.getFromLocalStorage("event"));
 
       this.isBusyAll = true;
+      await this.checkParticipantStatus();
       await this.getBrandProducts();
       await this.getCompanySubmissionForms();
       await this.getCompanyRegistrationForms();

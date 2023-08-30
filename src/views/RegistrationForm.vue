@@ -1,5 +1,6 @@
 <template>
   <div class="registration-form">
+    <splash-screen v-if="isBusyAll" />
     <div style="background-color: #c6e7ff; padding: 3px 0">
       <p class="text-muted" style="margin: 6px 10px; font-size: 12px">
         <span style="margin: 0 6px 0 0"
@@ -229,20 +230,39 @@
 import IMask from "imask";
 import Vue from "vue";
 import templateService from "@/service/template";
+import accountService from "@/service/account";
+import SplashScreen from "../components/SplashScreen.vue";
 
 export default {
+  components: { SplashScreen },
   name: "RegistrationForm",
   data() {
     return {
       regFormList: [],
       currentEvent: {},
+      isBusyAll: false,
     };
   },
   methods: {
     async submit() {
       this.$func.loading();
       try {
-        const regFormElementList = Array.from(
+        const loginData = this.$func.getLoginData();
+
+        // add participant
+        const participantResponse = await accountService.addParticipant({
+          customer_id: loginData.customer.customer_id,
+          event_id: this.currentEvent.event_id,
+        });
+
+        if (
+          !this.$func.isSuccessStatus(participantResponse.status) &&
+          participantResponse.statusText !== "Anda sudah terdaftar"
+        ) {
+          throw new Error(participantResponse.statusText);
+        }
+
+        let regFormElementList = Array.from(
           document.querySelectorAll(".reg-form")
         )
           .filter((regForm) => {
@@ -259,6 +279,28 @@ export default {
             template_id: regForm.dataset.id,
             answer: regForm.value,
           }));
+
+        regFormElementList.forEach((regForm) => {
+          const masterForm = this.regFormList.find(
+            (availableForm) => availableForm.template_id === regForm.template_id
+          );
+
+          if (
+            masterForm.question_type === "Time" &&
+            regForm.answer.toLowerCase() === "hh:mm"
+          ) {
+            regForm.delete = true;
+          } else if (
+            masterForm.question_type === "Date" &&
+            regForm.answer.toLowerCase() === "dd/mm/yyyy"
+          ) {
+            regForm.delete = true;
+          }
+        });
+
+        regFormElementList = regFormElementList.filter(
+          (regForm) => !regForm.delete
+        );
 
         for (const availableForm of this.regFormList) {
           if (
@@ -287,7 +329,6 @@ export default {
           }
         }
 
-        const loginData = this.$func.getLoginData();
         const reqBody = {
           customer_id: loginData.customer.customer_id,
           event_id: this.currentEvent.event_id,
@@ -298,17 +339,48 @@ export default {
           reqBody
         );
 
-        console.log(submissionResponse);
-
         if (!this.$func.isSuccessStatus(submissionResponse.status)) {
           throw new Error(submissionResponse.statusText);
         }
 
+        loginData.submittedRegistrationForm = true;
+        this.$func.saveToLocalStorage("login-data", JSON.stringify(loginData));
         this.$func.goTo("/product-checkout");
       } catch (err) {
         this.$func.showErrorSnackbar(err.message);
       } finally {
         this.$func.finishLoading();
+      }
+    },
+    async checkRegistrationStatus() {
+      this.isBusyAll = true;
+      try {
+        const loginData = this.$func.getLoginData();
+        const reqBody = {
+          customer_id: loginData.customer.customer_id,
+          event_id: this.currentEvent.event_id,
+        };
+
+        const inquiryResponse = await templateService.checkRegistrationStatus(
+          reqBody
+        );
+
+        if (!this.$func.isSuccessStatus(inquiryResponse.status)) {
+          throw new Error(inquiryResponse.statusText);
+        }
+
+        if (inquiryResponse.data.status === "Y") {
+          loginData.submittedRegistrationForm = true;
+          this.$func.saveToLocalStorage(
+            "login-data",
+            JSON.stringify(loginData)
+          );
+          this.$func.goTo("/product-checkout");
+        }
+      } catch (err) {
+        this.$func.showErrorSnackbar(err.message);
+      } finally {
+        this.isBusyAll = false;
       }
     },
     prepareUI() {
@@ -379,6 +451,7 @@ export default {
         this.$func.getFromLocalStorage("registration-form-list")
       );
       this.currentEvent = JSON.parse(this.$func.getFromLocalStorage("event"));
+      this.checkRegistrationStatus();
 
       this.prepareUI();
     } else {
