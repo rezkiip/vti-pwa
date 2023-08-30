@@ -58,5 +58,16 @@ export default {
     } catch {
       return null
     }
+  },
+  generateRandomHexString(length = 12) {
+    const hexChars = '0123456789ABCDEF';
+    let result = '';
+
+    for (let i = 0; i < length; i++) {
+      const randomIndex = Math.floor(Math.random() * hexChars.length);
+      result += hexChars.charAt(randomIndex);
+    }
+
+    return result;
   }
 }

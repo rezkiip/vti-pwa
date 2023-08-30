@@ -435,8 +435,8 @@
                       <input
                         class="form-check-input"
                         type="radio"
-                        name="radios"
-                        checked
+                        name="payment-method"
+                        value="qris"
                       />
                       <span class="form-check-label">
                         <img
@@ -449,15 +449,21 @@
                         </p>
                       </span>
                     </label>
-                    <label class="form-check">
+                    <label
+                      class="form-check"
+                      v-for="(bank, i) in bankList"
+                      :key="i"
+                    >
                       <input
                         class="form-check-input"
                         type="radio"
-                        name="radios"
+                        name="payment-method"
+                        :data-id="bank.integration_id"
+                        :value="bank.integration_id"
                       />
                       <span class="form-check-label">
                         <img
-                          src="@/assets/images/mandiri.png"
+                          :src="getBankLogo(bank.parameter_icon)"
                           alt=""
                           style="height: 1.4rem"
                         />
@@ -657,6 +663,7 @@ export default {
       paymentStep: 1,
       courierService: "",
       method: "",
+      selectedBank: {},
     };
   },
   computed: {
@@ -679,6 +686,9 @@ export default {
     },
     checkCourierService(courierCode, service) {
       document.querySelector(`#${courierCode}__${service}`).checked = true;
+    },
+    getBankLogo(logo) {
+      return require("@/assets/images/" + logo);
     },
     decreaseQty(product_id) {
       this.productList = this.productList.map((p) => {
@@ -791,8 +801,28 @@ export default {
       this.paymentStep++;
     },
     saveMethodData() {
-      this.method = "transfer";
-      this.paymentStep++;
+      try {
+        const selectedMethod = Array.from(
+          document.getElementsByName("payment-method")
+        ).find((method) => method.checked);
+
+        if (!selectedMethod) {
+          throw new Error("Mohon pilih salah satu metode pembayaran");
+        }
+
+        if (selectedMethod.value === "qris") {
+          this.method = "qris";
+        } else {
+          this.method = "transfer";
+          this.selectedBank = this.bankList.find(
+            (bank) => bank.integration_id === selectedMethod.dataset.id
+          );
+        }
+
+        this.paymentStep++;
+      } catch (err) {
+        this.$func.showErrorSnackbar(err.message);
+      }
     },
     async getShipdeoAccess() {
       try {
@@ -802,19 +832,22 @@ export default {
           throw new Error(tokenResponse.statusText);
         }
 
-        this.shipdeo_access_token = tokenResponse.accessToken;
+        this.shipdeo_access_token = tokenResponse.data.accessToken;
         this.shipdeo_access_token_expires_at =
-          tokenResponse.accessTokenExpiresAt;
-        localStorage.setItem("shipdeo_access_token", tokenResponse.accessToken);
+          tokenResponse.data.accessTokenExpiresAt;
+        localStorage.setItem(
+          "shipdeo_access_token",
+          tokenResponse.data.accessToken
+        );
         localStorage.setItem(
           "shipdeo_access_token_expires_at",
-          tokenResponse.accessTokenExpiresAt
+          tokenResponse.data.accessTokenExpiresAt
         );
       } catch (err) {
         this.$func.showErrorSnackbar(err.message);
       }
     },
-    async submit() {
+    async createOrder() {
       this.$func.loading();
       try {
         const selectedDestinationCity = document.querySelector(
@@ -847,7 +880,7 @@ export default {
         const reqBody = {
           courier: this.courierService.split("|")[0],
           courier_service: this.courierService.split("|")[1],
-          order_number: "00001",
+          order_number: this.$func.generateRandomHexString(),
           is_cod: false,
           delivery_type: "pickup",
           delivery_time: moment().format("DD/MM/yyyy hh:mm:ss A Z"),
@@ -887,7 +920,7 @@ export default {
           delivery_note: "",
           items: [],
           transaction: {
-            method_payment: "qris",
+            method_payment: this.method,
             unique_code: 1,
             customer_id: loginData.customer.customer_id,
             event_id: currentEvent.event_id,
@@ -933,12 +966,78 @@ export default {
           throw new Error(postResponse.statusText);
         }
 
+        this.createInvoice();
+      } catch (err) {
+        this.$func.showErrorSnackbar(err.message);
+      } finally {
+        this.$func.finishLoading();
+      }
+    },
+    async createInvoice() {
+      this.$func.loading();
+      try {
+        const loginData = this.$func.getLoginData();
+        const currentEvent = JSON.parse(
+          this.$func.getFromLocalStorage("event")
+        );
+
+        // add participant
+        const inquiryResponse = await productService.createUniqueCode();
+
+        if (!this.$func.isSuccessStatus(inquiryResponse.status)) {
+          throw new Error(inquiryResponse.statusText);
+        }
+
+        const reqBody = {
+          customer_id: loginData.customer.customer_id,
+          event_id: currentEvent.event_id,
+          address: this.shippingRecipientData.address,
+          courier: this.courierService.split("|")[0],
+          unique_code: inquiryResponse.data.parameters[0].parameter_id,
+          method_payment: this.method,
+          destination_account_number: "",
+          destination_account_name: "",
+          destination_bank_name: "",
+          destination_bank_code: "",
+          transaction: [],
+        };
+
+        if (this.method === "transfer") {
+          reqBody.destination_account_number = JSON.parse(
+            this.selectedBank.free_data2
+          )[0].accountNumber;
+          reqBody.destination_account_name = JSON.parse(
+            this.selectedBank.free_data2
+          )[0].accountName;
+          reqBody.destination_bank_name = this.selectedBank.parameter_name;
+          reqBody.destination_bank_code = "008";
+        }
+
+        reqBody.transaction = this.productList.map((p) => {
+          const result = {
+            product_id: p.product_id,
+            price: Number(p.price),
+            total_product: Number(p.qty),
+          };
+
+          return result;
+        });
+
+        const postResponse = await productService.createInvoice(reqBody);
+
+        if (!this.$func.isSuccessStatus(postResponse.status)) {
+          throw new Error(postResponse.statusText);
+        }
+
         console.log(postResponse);
       } catch (err) {
         this.$func.showErrorSnackbar(err.message);
       } finally {
         this.$func.finishLoading();
       }
+    },
+    submit() {
+      this.createOrder();
     },
     prepareUI() {
       this.dropdownForm.selectCity = new TomSelect("#select-city", {

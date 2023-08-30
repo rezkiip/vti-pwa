@@ -6,6 +6,13 @@ export default {
       company_id, brand_id, page, size
     })
   },
+  createUniqueCode() {
+    return AXIOS.post('/parameter/unique-code', {
+      "type": "unique_code",
+      "page": 0,
+      "size": 100
+  })
+  },
   createInvoice(reqBody) {
     return AXIOS.post('transaction/create', reqBody)
   }
