@@ -6,6 +6,7 @@ import EventInsight from '../views/EventInsight.vue'
 import AboutEvent from '../views/AboutEvent.vue'
 import ProductCheckout from '../views/ProductCheckout.vue'
 import RegistrationForm from '../views/RegistrationForm.vue'
+import Invoice from '../views/Invoice.vue'
 
 Vue.use(VueRouter)
 
@@ -38,6 +39,11 @@ const routes = [
         path: '/registration-form',
         component: RegistrationForm,
         name: 'RegistrationForm'
+      },
+      {
+        path: '/invoice',
+        component: Invoice,
+        name: 'Invoice'
       }
     ]
   }

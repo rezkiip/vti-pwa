@@ -1015,7 +1015,11 @@ export default {
           throw new Error(postResponse.statusText);
         }
 
-        console.log(postResponse);
+        this.$func.saveToLocalStorage(
+          "invoice",
+          JSON.stringify(postResponse.data)
+        );
+        this.$func.goTo("/invoice");
       } catch (err) {
         this.$func.showErrorSnackbar(err.message);
       } finally {
