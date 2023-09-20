@@ -7,6 +7,9 @@ import AboutEvent from '../views/AboutEvent.vue'
 import ProductCheckout from '../views/ProductCheckout.vue'
 import RegistrationForm from '../views/RegistrationForm.vue'
 import Invoice from '../views/Invoice.vue'
+import Redirection from '../views/Redirection.vue'
+import FunctionService from '../tools/FunctionService';
+import eventService from '../service/event';
 
 Vue.use(VueRouter)
 
@@ -44,6 +47,11 @@ const routes = [
         path: '/invoice',
         component: Invoice,
         name: 'Invoice'
+      },
+      {
+        path: '/:eventPublicId',
+        component: Redirection,
+        name: 'Redirection',
       }
     ]
   }
@@ -51,8 +59,26 @@ const routes = [
 
 const router = new VueRouter({
   mode: 'history',
-  base: '/pwa',
+  base: '/',
   routes
 })
+
+router.beforeEach(async (to, from, next) => {
+  if (to.params.eventPublicId) {
+    // localStorage.setItem('eventPublicId', to.params.eventPublicId + location.hash);
+
+    const eventResponse = await eventService.getEventInsight(to.params.eventPublicId + location.hash);
+
+    if (!FunctionService.isSuccessStatus(eventResponse.status)) {
+      throw new Error(eventResponse.statusText);
+    }
+
+    FunctionService.saveToLocalStorage("event", JSON.stringify(eventResponse.data.events[0]));
+
+    next('/event-insight');
+  } else {
+    next();
+  }
+});
 
 export default router

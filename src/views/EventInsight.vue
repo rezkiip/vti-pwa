@@ -1215,6 +1215,9 @@
                 @click.prevent="handleCtaBtn"
                 class="btn"
                 style="background-color: #1b9dfb; color: white; width: 100%"
+                :class="{
+                  disabled: currentEvent.type === 'UPCOMING',
+                }"
               >
                 {{ ctaText }}
               </a>
@@ -1462,6 +1465,10 @@ export default {
   },
   computed: {
     ctaText() {
+      if (this.currentEvent.type === "UPCOMING") {
+        return "AKAN DATANG";
+      }
+
       if (this.participantStatus.submittedRegistrationForm) {
         return "CHECKOUT PRODUK";
       }
