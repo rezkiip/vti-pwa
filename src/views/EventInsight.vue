@@ -121,7 +121,9 @@
                     style="height: 1.5rem"
                   />
                   <p class="text-muted" style="font-size: 12px; color: black">
-                    Online
+                    {{
+                      currentEvent.location === "online" ? "Online" : "Offline"
+                    }}
                   </p>
                 </div>
               </a>
@@ -151,6 +153,7 @@
                 href="#offcanvasBottom5"
                 role="button"
                 aria-controls="offcanvasBottom"
+                v-if="currentEvent.check_in === 'Y'"
               >
                 <div
                   class="button-inline-block text-center"
@@ -195,6 +198,7 @@
                 href="#offcanvasBottom7"
                 role="button"
                 aria-controls="offcanvasBottom"
+                v-if="currentEvent.winning_prize === 'Y'"
               >
                 <div
                   class="button-inline-block text-center"
@@ -258,6 +262,7 @@
                 href="#offcanvasBottom10"
                 role="button"
                 aria-controls="offcanvasBottom"
+                v-if="currentEvent.submission === 'Y'"
               >
                 <div
                   class="button-inline-block text-center"
@@ -1260,8 +1265,7 @@
                 </div>
                 <div>
                   <p>
-                    The Power of Learning Style : Kenali Gaya Belajarmu, Raih
-                    Prestasimu !
+                    {{ currentEvent.short_description }}
                   </p>
                   <p class="text-muted" style="font-size: 11.5px">
                     Deskripsi
