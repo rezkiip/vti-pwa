@@ -1,11 +1,7 @@
 <template>
   <nav class="navbar bg-body-tertiary sticky-top bg-white">
     <div class="container">
-      <span
-        class="navbar-brand mb-0 h1"
-        @click="back"
-        v-if="$route.path !== '/'"
-      >
+      <span class="navbar-brand mb-0 h1" @click="back" v-if="backAvailable">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           class="icon icon-tabler icon-tabler-chevron-left"
@@ -98,6 +94,22 @@
 <script>
 export default {
   name: "Header",
+  computed: {
+    backAvailable() {
+      if (this.$route.path === "/") {
+        return false;
+      }
+
+      if (
+        this.$route.path === "/event-insight" &&
+        localStorage.getItem("from-permanent-link") === "true"
+      ) {
+        return false;
+      }
+
+      return true;
+    },
+  },
   methods: {
     back() {
       if (

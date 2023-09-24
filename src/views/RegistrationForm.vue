@@ -16,7 +16,11 @@
     <div class="container" style="background-color: white">
       <div class="row">
         <div class="col-lg-6" style="margin-top: 5px">
-          <form @submit.prevent="submit" class="card-body">
+          <form
+            @submit.prevent="submit"
+            class="card-body"
+            style="overflow-y: auto; max-height: 77vh"
+          >
             <div v-for="(regForm, k) in regFormList" :key="k">
               <div
                 class="form-floating mb-3"
@@ -38,22 +42,23 @@
                 >
               </div>
               <div
-                class="form-floating mb-3"
+                class="mb-3"
                 v-else-if="regForm.question_type === 'Long Answer'"
               >
-                <textarea
-                  id="floating-textarea"
-                  class="form-contro reg-form"
-                  data-bs-toggle="autosize"
-                  :data-id="regForm.template_id"
-                  :data-question="regForm.question_type"
-                ></textarea>
-                <label for="floating-textarea"
+                <label for="floating-textarea" class="d-block"
                   >{{ regForm.question }}
                   <span style="color: red" v-if="regForm.required === 'Y'"
                     >*</span
                   ></label
                 >
+                <textarea
+                  id="floating-textarea"
+                  class="form-contro reg-form"
+                  style="width: 100%"
+                  data-bs-toggle="autosize"
+                  :data-id="regForm.template_id"
+                  :data-question="regForm.question_type"
+                ></textarea>
               </div>
               <div
                 class="mb-3"
@@ -280,6 +285,39 @@ export default {
             answer: regForm.value,
           }));
 
+        const regFormSet = new Set();
+        const regFormMap = new Map();
+        regFormElementList.forEach((regForm) => {
+          if (regFormMap.has(regForm.template_id)) {
+            regFormMap.set(
+              regForm.template_id,
+              regFormMap.get(regForm.template_id) + "," + regForm.answer
+            );
+          } else {
+            regFormMap.set(regForm.template_id, regForm.answer);
+          }
+        });
+
+        for (const [key, value] of regFormMap.entries()) {
+          regFormElementList = regFormElementList.map((regForm) => {
+            if (regForm.template_id === key) {
+              regForm.answer = value;
+            }
+
+            return regForm;
+          });
+        }
+
+        const newRegFormElementList = [];
+        regFormElementList.forEach((regForm) => {
+          if (!regFormSet.has(regForm.template_id)) {
+            regFormSet.add(regForm.template_id);
+            newRegFormElementList.push(regForm);
+          }
+        });
+
+        regFormElementList = newRegFormElementList;
+
         regFormElementList.forEach((regForm) => {
           const masterForm = this.regFormList.find(
             (availableForm) => availableForm.template_id === regForm.template_id
@@ -335,17 +373,19 @@ export default {
           templates: regFormElementList,
         };
 
-        const submissionResponse = await templateService.submitFormRegistration(
-          reqBody
-        );
+        console.log("reqBody", reqBody);
 
-        if (!this.$func.isSuccessStatus(submissionResponse.status)) {
-          throw new Error(submissionResponse.statusText);
-        }
+        // const submissionResponse = await templateService.submitFormRegistration(
+        //   reqBody
+        // );
 
-        loginData.submittedRegistrationForm = true;
-        this.$func.saveToLocalStorage("login-data", JSON.stringify(loginData));
-        this.$func.goTo("/product-checkout");
+        // if (!this.$func.isSuccessStatus(submissionResponse.status)) {
+        //   throw new Error(submissionResponse.statusText);
+        // }
+
+        // loginData.submittedRegistrationForm = true;
+        // this.$func.saveToLocalStorage("login-data", JSON.stringify(loginData));
+        // this.$func.goTo("/product-checkout");
       } catch (err) {
         this.$func.showErrorSnackbar(err.message);
       } finally {

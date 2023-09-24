@@ -440,6 +440,7 @@ export default {
     },
   },
   async mounted() {
+    localStorage.setItem("from-permanent-link", "false");
     this.isBusyAll = true;
     await this.getEventList();
     this.isBusyAll = false;

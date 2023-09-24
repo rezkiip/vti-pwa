@@ -1526,6 +1526,14 @@ export default {
       ) {
         const modal = new Modal("#modal-registration");
         modal.show();
+      } else if (
+        this.participantStatus.loggedIn &&
+        !this.participantStatus.submittedRegistrationForm
+      ) {
+        this.$func.saveToLocalStorage(
+          "registration-form-list",
+          JSON.stringify(this.regFormList)
+        );
       }
 
       this.$func.goTo(this.ctaRedirectPath);

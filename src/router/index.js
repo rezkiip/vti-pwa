@@ -65,6 +65,7 @@ const router = new VueRouter({
 
 router.beforeEach(async (to, from, next) => {
   if (to.params.eventPublicId) {
+    localStorage.setItem("from-permanent-link", "true")
     // localStorage.setItem('eventPublicId', to.params.eventPublicId + location.hash);
 
     const eventResponse = await eventService.getEventInsight(to.params.eventPublicId + location.hash);
@@ -73,7 +74,25 @@ router.beforeEach(async (to, from, next) => {
       throw new Error(eventResponse.statusText);
     }
 
-    FunctionService.saveToLocalStorage("event", JSON.stringify(eventResponse.data.events[0]));
+    const result = (eventResponse.data.events[0]);
+    console.log('result', result);
+    
+    const bannerResponse = await eventService.getBannerByEventId(result.event_id)
+
+    if (!FunctionService.isSuccessStatus(bannerResponse.status)) {
+      throw new Error(bannerResponse.statusText);
+    }
+    
+    const eventCompanyResponse = await eventService.getCompanyEvents(result.company_id)
+
+    if (!FunctionService.isSuccessStatus(eventCompanyResponse.status)) {
+      throw new Error(eventCompanyResponse.statusText);
+    }
+
+    result.banners = bannerResponse.data.products
+    result.event_description = eventCompanyResponse.data.events.find(evt => evt.event_id === result.event_id).description;
+
+    FunctionService.saveToLocalStorage("event", JSON.stringify(result));
 
     next('/event-insight');
   } else {

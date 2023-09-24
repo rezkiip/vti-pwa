@@ -10,6 +10,11 @@ export default {
       size: 100
     });
   },
+  getCompanyEvents(company_id, page = 0, size = 999) {
+    return AXIOS.post('dashboard/eventListByCompany', {
+      company_id, page, size
+    })
+  },
   getBannerByEventId(event_id, page = 0, size = 999) {
     return AXIOS.post('banner/byEvent', {
       event_id, page, size
