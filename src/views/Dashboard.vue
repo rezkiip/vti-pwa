@@ -8,7 +8,7 @@
           style="margin-top: 5px"
           v-if="upcomingEvents.length > 0"
         >
-          <a href="/view-more.html" style="text-decoration: none; color: black">
+          <a href="#" style="text-decoration: none; color: black">
             <div class="card-header">
               <h3 class="card-title">Akan Datang</h3>
               <div class="card-actions">
@@ -108,7 +108,7 @@
           style="margin-top: 5px"
           v-if="startingEvents.length > 0"
         >
-          <a href="/view-more.html" style="text-decoration: none; color: black">
+          <a href="#" style="text-decoration: none; color: black">
             <div class="card-header">
               <h3 class="card-title">Daftar Sekarang</h3>
               <div class="card-actions">
@@ -208,7 +208,7 @@
           style="margin-top: 5px"
           v-if="ongoingEvents.length > 0"
         >
-          <a href="/view-more.html" style="text-decoration: none; color: black">
+          <a href="#" style="text-decoration: none; color: black">
             <div class="card-header">
               <h3 class="card-title">Sedang Berlangsung</h3>
               <div class="card-actions">
@@ -308,7 +308,7 @@
           style="margin-top: 5px"
           v-if="closedEvents.length > 0"
         >
-          <a href="/view-more.html" style="text-decoration: none; color: black">
+          <a href="#" style="text-decoration: none; color: black">
             <div class="card-header">
               <h3 class="card-title">Selesai</h3>
               <div class="card-actions">

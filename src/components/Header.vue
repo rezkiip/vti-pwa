@@ -22,8 +22,8 @@
       <span class="navbar-brand mb-0 h1" v-else>
         <img src="@/assets/images/logo.svg" alt="" height="30px" />
       </span>
-      <span>
-        <svg
+      <span v-if="$route.path !== '/'">
+        <!-- <svg
           xmlns="http://www.w3.org/2000/svg"
           class="icon icon-tabler icon-tabler-search"
           width="24"
@@ -57,13 +57,36 @@
           <path d="M16 4h2a2 2 0 0 1 2 2v1"></path>
           <path d="M16 20h2a2 2 0 0 0 2 -2v-1"></path>
           <path d="M5 12l14 0"></path>
-        </svg>
+        </svg> -->
 
+        <a @click.prevent="handleOptionBtn" v-if="!participantStatus.loggedIn">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="icon icon-tabler icon-tabler-list"
+            width="24"
+            height="24"
+            viewBox="1 1 19 19"
+            stroke-width="50"
+            stroke="#1B9DFB"
+            fill="none"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+            <path d="M9 6l11 0"></path>
+            <path d="M9 12l11 0"></path>
+            <path d="M9 18l11 0"></path>
+            <path d="M5 6l0 .01"></path>
+            <path d="M5 12l0 .01"></path>
+            <path d="M5 18l0 .01"></path>
+          </svg>
+        </a>
         <a
           data-bs-toggle="offcanvas"
           href="#offcanvasBottom11"
           role="button"
           aria-controls="offcanvasBottom"
+          v-else
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -88,12 +111,76 @@
         </a>
       </span>
     </div>
+
+    <div
+      class="offcanvas offcanvas-bottom"
+      tabindex="-1"
+      id="offcanvasBottom11"
+      style="height: 35rem"
+      aria-labelledby="offcanvasBottomLabel"
+    >
+      <div class="row" style="margin-top: 10px">
+        <div class="col-3">
+          <img
+            src="@/assets/images/018m.jpg"
+            alt=""
+            style="margin-left: 1rem; height: 5rem; border-radius: 100%"
+          />
+        </div>
+        <div class="col-8 home-card-title">
+          <h3 class="overflow-text">
+            {{ participantStatus.name }}
+            <!-- <span>
+              <img
+                alt=""
+                style="
+                  position: relative;
+                  left: 80px;
+                  border-radius: 20%;
+                  background-color: #1b9dfb;
+                "
+                src="@/assets/images/pencil.svg"
+            /></span> -->
+          </h3>
+          <p style="color: gray; font-size: small">
+            {{ participantStatus.phone }}
+            <span>
+              <img
+                alt=""
+                style="height: 10px"
+                src="@/assets/images/shield-check.svg"
+            /></span>
+          </p>
+          <p style="color: gray; font-size: small; line-height: 0">
+            {{ participantStatus.email }}
+            <span>
+              <img
+                style="height: 10px"
+                src="@/assets/images/shield-check.svg"
+                alt=""
+            /></span>
+          </p>
+        </div>
+      </div>
+    </div>
   </nav>
 </template>
 
 <script>
+import { Modal } from "bootstrap";
+
 export default {
   name: "Header",
+  data() {
+    return {
+      participantStatus: {
+        loggedIn: false,
+        name: "",
+        email: "",
+        phone: "",
+      },
+    };
+  },
   computed: {
     backAvailable() {
       if (this.$route.path === "/") {
@@ -121,6 +208,22 @@ export default {
         this.$func.back();
       }
     },
+    handleOptionBtn() {
+      // if (!this.participantStatus.loggedIn) {
+      const modal = new Modal("#modal-registration");
+      modal.show();
+      // }
+    },
+  },
+  mounted() {
+    if (this.$func.getLoginData()) {
+      this.participantStatus.loggedIn = true;
+      this.participantStatus.name =
+        this.$func.getLoginData().customer.name_customer;
+      this.participantStatus.email = this.$func.getLoginData().customer.email;
+      this.participantStatus.phone =
+        this.$func.getLoginData().customer.phone_number;
+    }
   },
 };
 </script>

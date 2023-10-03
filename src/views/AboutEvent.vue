@@ -537,6 +537,8 @@ export default {
           JSON.stringify(this.currentEvent)
         );
         this.$func.goTo("/registration-form");
+
+        location.reload()
       } catch (err) {
         this.$func.showErrorSnackbar(err.message);
       } finally {

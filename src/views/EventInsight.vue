@@ -8,6 +8,7 @@
             <div class="carousel-container">
               <a
                 data-fslightbox="gallery"
+                class="me-3"
                 v-for="(banner, i) in currentEvent.banners"
                 :key="i"
                 :href="banner.banner"
@@ -85,7 +86,7 @@
                   </p>
                 </div>
               </a>
-              <a
+              <!-- <a
                 data-bs-toggle="offcanvas"
                 href="#offcanvasBottom2"
                 role="button"
@@ -104,7 +105,7 @@
                     12/100
                   </p>
                 </div>
-              </a>
+              </a> -->
               <a
                 data-bs-toggle="offcanvas"
                 href="#offcanvasBottom3"
@@ -132,6 +133,7 @@
                 href="#offcanvasBottom4"
                 role="button"
                 aria-controls="offcanvasBottom"
+                v-if="currentEvent.location === 'offline'"
               >
                 <div
                   class="button-inline-block text-center"
@@ -241,6 +243,7 @@
                 href="#offcanvasBottom9"
                 role="button"
                 aria-controls="offcanvasBottom"
+                v-if="currentEvent.form_validation === 'Y'"
               >
                 <div
                   class="button-inline-block text-center"
@@ -1024,64 +1027,6 @@
               </div>
             </div>
 
-            <a href="/profile.html" style="text-decoration: none; color: black">
-              <div
-                class="offcanvas offcanvas-bottom"
-                tabindex="-1"
-                id="offcanvasBottom11"
-                style="height: 35rem"
-                aria-labelledby="offcanvasBottomLabel"
-              >
-                <div class="row" style="margin-top: 10px">
-                  <div class="col-3">
-                    <img
-                      src="@/assets/images/018m.jpg"
-                      alt=""
-                      style="
-                        margin-left: 1rem;
-                        height: 5rem;
-                        border-radius: 100%;
-                      "
-                    />
-                  </div>
-                  <div class="col-8 home-card-title">
-                    <h3 class="overflow-text">
-                      Andika Nurtamin
-                      <span>
-                        <img
-                          alt=""
-                          style="
-                            position: relative;
-                            left: 80px;
-                            border-radius: 20%;
-                            background-color: #1b9dfb;
-                          "
-                          src="@/assets/images/pencil.svg"
-                      /></span>
-                    </h3>
-                    <p style="color: gray; font-size: small">
-                      08124653723
-                      <span>
-                        <img
-                          alt=""
-                          style="height: 10px"
-                          src="@/assets/images/shield-check.svg"
-                      /></span>
-                    </p>
-                    <p style="color: gray; font-size: small; line-height: 0">
-                      cobaemail@gmail.com
-                      <span>
-                        <img
-                          style="height: 10px"
-                          src="@/assets/images/shield-check.svg"
-                          alt=""
-                      /></span>
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </a>
-
             <!-- <div class="mb-3">
               <div class="card" style="margin-top: 5px">
                 <div class="card-header row">
@@ -1652,6 +1597,8 @@ export default {
           JSON.stringify(this.currentEvent)
         );
         this.$func.goTo("/registration-form");
+
+        location.reload();
       } catch (err) {
         this.$func.showErrorSnackbar(err.message);
       } finally {
