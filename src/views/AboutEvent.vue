@@ -315,7 +315,7 @@
                 autocomplete="off"
                 class="form-control mb-2"
                 name="example-text-input"
-                placeholder="Email/Username"
+                placeholder="Alamat Email"
                 :disabled="confirmRegister"
                 v-model="registration.email"
               />
@@ -371,7 +371,7 @@
                 autocomplete="off"
                 class="form-control mb-2"
                 name="example-text-input"
-                placeholder="Email/Username"
+                placeholder="Alamat Email"
                 :disabled="confirmRegister"
                 v-model="loginData.username"
               />
@@ -503,7 +503,7 @@ export default {
       this.$func.loading();
       try {
         if (!this.loginData.username) {
-          throw new Error("Username harus diisi");
+          throw new Error("Alamat Email harus diisi");
         }
 
         if (!this.loginData.password) {
@@ -538,7 +538,7 @@ export default {
         );
         this.$func.goTo("/registration-form");
 
-        location.reload()
+        location.reload();
       } catch (err) {
         this.$func.showErrorSnackbar(err.message);
       } finally {

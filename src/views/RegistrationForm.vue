@@ -40,6 +40,9 @@
                     >*</span
                   ></label
                 >
+                <small class="text-secondary">
+                  {{ regForm.description }}
+                </small>
               </div>
               <div
                 class="mb-3"
@@ -59,6 +62,9 @@
                   :data-id="regForm.template_id"
                   :data-question="regForm.question_type"
                 ></textarea>
+                <small class="text-secondary">
+                  {{ regForm.description }}
+                </small>
               </div>
               <div
                 class="mb-3"
@@ -74,7 +80,10 @@
                   v-for="(option, i) in JSON.parse(regForm.free_data1)"
                   :key="i"
                 >
-                  <label class="form-check">
+                  <label
+                    class="form-check"
+                    v-if="!option.startsWith('__other:')"
+                  >
                     <input
                       name="radio"
                       :data-option="i"
@@ -86,7 +95,27 @@
                     />
                     <span class="form-check-label" v-text="option"></span>
                   </label>
+                  <label class="form-check" v-else>
+                    <input
+                      name="radio"
+                      :data-option="i"
+                      class="form-check-input reg-form"
+                      type="radio"
+                      :value="option"
+                      :data-id="regForm.template_id"
+                      :data-question="regForm.question_type"
+                    />
+                    <input
+                      type="text"
+                      class="form-control other-option"
+                      autocomplete="off"
+                      :data-id="regForm.template_id"
+                    />
+                  </label>
                 </div>
+                <small class="text-secondary">
+                  {{ regForm.description }}
+                </small>
               </div>
               <div
                 class="mb-3"
@@ -102,7 +131,10 @@
                   v-for="(option, i) in JSON.parse(regForm.free_data1)"
                   :key="i"
                 >
-                  <label class="form-check">
+                  <label
+                    class="form-check"
+                    v-if="!option.startsWith('__other:')"
+                  >
                     <input
                       name="checkbox"
                       :data-option="i"
@@ -114,7 +146,27 @@
                     />
                     <span class="form-check-label" v-text="option"></span>
                   </label>
+                  <label class="form-check" v-else>
+                    <input
+                      name="checkbox"
+                      :data-option="i"
+                      class="form-check-input reg-form"
+                      type="checkbox"
+                      :value="option"
+                      :data-id="regForm.template_id"
+                      :data-question="regForm.question_type"
+                    />
+                    <input
+                      type="text"
+                      class="form-control other-option"
+                      autocomplete="off"
+                      :data-id="regForm.template_id"
+                    />
+                  </label>
                 </div>
+                <small class="text-secondary">
+                  {{ regForm.description }}
+                </small>
               </div>
               <div
                 class="form-floating mb-3"
@@ -140,6 +192,9 @@
                     *
                   </span>
                 </label>
+                <small class="text-secondary">
+                  {{ regForm.description }}
+                </small>
               </div>
               <div
                 style="mb-3"
@@ -165,6 +220,9 @@
                       >*</span
                     ></label
                   >
+                  <small class="text-secondary">
+                    {{ regForm.description }}
+                  </small>
                 </div>
               </div>
               <div class="mb-3" v-else-if="regForm.question_type === 'Date'">
@@ -183,6 +241,9 @@
                   :data-id="regForm.template_id"
                   :data-question="regForm.question_type"
                 />
+                <small class="text-secondary">
+                  {{ regForm.description }}
+                </small>
               </div>
               <div class="mb-3" v-else-if="regForm.question_type === 'Time'">
                 <label :for="`floating-time-${k}`"
@@ -198,6 +259,9 @@
                   :data-id="regForm.template_id"
                   :data-question="regForm.question_type"
                 />
+                <small class="text-secondary">
+                  {{ regForm.description }}
+                </small>
               </div>
             </div>
 
@@ -288,6 +352,12 @@ export default {
         const regFormSet = new Set();
         const regFormMap = new Map();
         regFormElementList.forEach((regForm) => {
+          if (regForm.answer.startsWith("__other:")) {
+            regForm.answer = document.querySelector(
+              `.other-option[data-id=${regForm.template_id}]`
+            ).value;
+          }
+
           if (regFormMap.has(regForm.template_id)) {
             regFormMap.set(
               regForm.template_id,

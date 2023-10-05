@@ -75,7 +75,6 @@ router.beforeEach(async (to, from, next) => {
     }
 
     const result = (eventResponse.data.events[0]);
-    console.log('result', result);
     
     const bannerResponse = await eventService.getBannerByEventId(result.event_id)
 

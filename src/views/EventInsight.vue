@@ -1280,7 +1280,7 @@
                 autocomplete="off"
                 class="form-control mb-2"
                 name="example-text-input"
-                placeholder="Email/Username"
+                placeholder="Alamat Email"
                 :disabled="confirmRegister"
                 v-model="registration.email"
               />
@@ -1336,7 +1336,7 @@
                 autocomplete="off"
                 class="form-control mb-2"
                 name="example-text-input"
-                placeholder="Email/Username"
+                placeholder="Alamat Email"
                 :disabled="confirmRegister"
                 v-model="loginData.username"
               />
@@ -1499,7 +1499,7 @@ export default {
           }
 
           if (!this.registration.email) {
-            throw new Error("Email harus diisi");
+            throw new Error("Alamat Email harus diisi");
           }
 
           if (!this.registration.phone) {
@@ -1563,7 +1563,7 @@ export default {
       this.$func.loading();
       try {
         if (!this.loginData.username) {
-          throw new Error("Username harus diisi");
+          throw new Error("Alamat Email harus diisi");
         }
 
         if (!this.loginData.password) {
