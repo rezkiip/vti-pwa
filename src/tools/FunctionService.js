@@ -1,5 +1,7 @@
 import Router from './Router';
 import StringUtils from './StringUtils';
+import QRCode from 'qrcode-generator';
+import * as EmailValidator from 'email-validator';
 
 export default {
   goTo(page) {
@@ -69,5 +71,31 @@ export default {
     }
 
     return result;
+  },
+  generateQrCode(str) {
+    const qrcode = QRCode(0, 'H');
+    qrcode.addData(str);
+    qrcode.make();
+
+    const canvas = document.createElement('canvas');
+    canvas.width = qrcode.getModuleCount() * 10;
+    canvas.height = qrcode.getModuleCount() * 10;
+
+    const context = canvas.getContext('2d');
+    context.fillStyle = '#FFFFFF';
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    for (let y = 0; y < qrcode.getModuleCount(); y++) {
+      for (let x = 0; x < qrcode.getModuleCount(); x++) {
+        if (qrcode.isDark(y, x)) {
+          context.fillStyle = '#000000';
+          context.fillRect(y*10, x*10, 10, 10);
+        }
+      }   
+    }
+
+    return canvas.toDataURL('image/png');
+  },
+  validEmail(email) {
+    return EmailValidator.validate(email);
   }
 }

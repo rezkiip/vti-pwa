@@ -1565,6 +1565,10 @@ export default {
             throw new Error("Password harus diisi");
           }
 
+          if (!this.$func.validEmail(this.registration.email)) {
+            throw new Error("Alamat Email tidak valid");
+          }
+
           this.confirmRegister = true;
         } else {
           if (!this.registration.confirmationPassword) {
@@ -1623,6 +1627,10 @@ export default {
 
         if (!this.loginData.password) {
           throw new Error("Password harus diisi");
+        }
+
+        if (!this.$func.validEmail(this.loginData.username)) {
+          throw new Error("Alamat Email tidak valid");
         }
 
         const reqBody = {

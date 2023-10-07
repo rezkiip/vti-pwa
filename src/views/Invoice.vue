@@ -8,7 +8,11 @@
             style="margin: 6px 10px; font-size: 12px"
           >
             <span style="margin: 0 6px 0 0"
-              ><img src=" /images/info-label.svg" alt="" style="height: 17px" />
+              ><img
+                src=" @/assets/images/info-label.svg"
+                alt=""
+                style="height: 17px"
+              />
             </span>
             Selesaikan pembayaran dalam ... <br />
             <b>14 menit 59 detik</b>
@@ -16,39 +20,53 @@
         </div>
       </div>
 
-      <div class="content">
-        <div class="qris" style="height: 19rem">
+      <div class="content" style="background-color: white">
+        <div
+          class="d-flex align-items-center justify-content-between px-3 pt-3"
+        >
+          <div>
+            <img src="@/assets/images/qris-all_logo.svg" alt="" width="120px" />
+          </div>
+          <div>
+            <img src="@/assets/images/gpn_logo.svg" alt="" width="40px" />
+          </div>
+        </div>
+        <div class="d-flex align-items-center justify-content-between mt-5">
+          <img src="@/assets/images/qris_elm1.svg" alt="" height="150px" />
+          <img :src="qrCode" alt="" width="50%" />
+          <img src="@/assets/images/qris_elm2.svg" alt="" height="150px" />
+        </div>
+        <!-- <div class="qris" style="height: 19rem">
           <div class="qris-all-logo">
-            <img src="/images/qris-all_logo.svg" alt="" />
+            <img src="@/assets/images/qris-all_logo.svg" alt="" />
           </div>
 
           <div class="gpn-logo">
-            <img src="/images/gpn_logo.svg" alt="" />
+            <img src="@/assets/images/gpn_logo.svg" alt="" />
           </div>
           <div class="qris-element1">
-            <img src="/images/qris_elm1.svg" alt="" />
+            <img src="@/assets/images/qris_elm1.svg" alt="" />
           </div>
           <div class="qris-element2">
-            <img src="/images/qris_elm2.svg" alt="" />
+            <img src="@/assets/images/qris_elm2.svg" alt="" />
           </div>
           <div class="qr-code-qris text-center">
-            <img src="/images/qrcode-qris.png" alt="" />
+            <img src="@/assets/images/qrcode-qris.png" alt="" />
           </div>
           <div class="ideo-total-biaya">
             <div class="row col-4 total-biaya">
               <p class="text-muted">Total Biaya</p>
-              <h4><b>Rp 36.012</b></h4>
+              <h4>
+                <b>Rp {{ invoice.transaction.total_value }}</b>
+              </h4>
             </div>
           </div>
           <div class="nama-nmid-qris">
             <h4>IDEO</h4>
-            <!-- <h6>NMID : IDXXXXXXXXXXXTID</h6> -->
+            <h6>NMID : IDXXXXXXXXXXXTID</h6>
           </div>
-        </div>
-        <div
-          class="cara-bayar container"
-          style="background-color: white; padding: 0 2rem 3rem 2rem"
-        >
+        </div> -->
+        <div class="cara-bayar container py-4 px-3">
           <h5>Cara Bayar QRIS</h5>
           <p style="font-size: 13px">
             Scan, unggah atau kirim kode melalui aplikasi pembayaran e-Banking
@@ -131,38 +149,38 @@
       </div>
       <div class="offcanvas-body">
         <div class="text-center">
-          <img src="/images/qrcode.png" alt="" style="height: 7rem" />
+          <img src="@/assets/images/qrcode.png" alt="" style="height: 7rem" />
         </div>
         <div class="kirim-perbankan mt-3">
           <h5>Kirim ke Aplikasi Perbankan</h5>
           <div class="carousel-container logo-app-perbankan">
             <div class="button-inline-block logo-perbankan-pay text-center">
-              <img src="/images/stabilo.png" />
+              <img src="@/assets/images/stabilo.png" />
               <!--- harusnya image-->
               <h6>Livin’ by Mandiri</h6>
             </div>
             <div class="button-inline-block logo-perbankan-pay text-center">
-              <img src="/images/maped2.svg" />
+              <img src="@/assets/images/maped2.svg" />
               <!--- harusnya image-->
               <h6>myBCA</h6>
             </div>
             <div class="button-inline-block logo-perbankan-pay text-center">
-              <img src="/images/stabilo.png" />
+              <img src="@/assets/images/stabilo.png" />
               <!--- harusnya image-->
               <h6>BRImo BRI</h6>
             </div>
             <div class="button-inline-block logo-perbankan-pay text-center">
-              <img src="/images/maped2.svg" />
+              <img src="@/assets/images/maped2.svg" />
               <!--- harusnya image-->
               <h6>myBCA</h6>
             </div>
             <div class="button-inline-block logo-perbankan-pay text-center">
-              <img src="/images/stabilo.png" />
+              <img src="@/assets/images/stabilo.png" />
               <!--- harusnya image-->
               <h6>BRImo BRI</h6>
             </div>
             <div class="button-inline-block logo-perbankan-pay text-center">
-              <img src="/images/maped2.svg" />
+              <img src="@/assets/images/maped2.svg" />
               <!--- harusnya image-->
               <h6>myBCA</h6>
             </div>
@@ -172,32 +190,32 @@
           <h5>Kirim ke Aplikasi Dompet Digital</h5>
           <div class="carousel-container logo-app-perbankan">
             <div class="button-inline-block logo-perbankan-pay text-center">
-              <img src="/images/stabilo.png" />
+              <img src="@/assets/images/stabilo.png" />
               <!--- harusnya image-->
               <h6>Livin’ by Mandiri</h6>
             </div>
             <div class="button-inline-block logo-perbankan-pay text-center">
-              <img src="/images/maped2.svg" />
+              <img src="@/assets/images/maped2.svg" />
               <!--- harusnya image-->
               <h6>myBCA</h6>
             </div>
             <div class="button-inline-block logo-perbankan-pay text-center">
-              <img src="/images/stabilo.png" />
+              <img src="@/assets/images/stabilo.png" />
               <!--- harusnya image-->
               <h6>BRImo BRI</h6>
             </div>
             <div class="button-inline-block logo-perbankan-pay text-center">
-              <img src="/images/maped2.svg" />
+              <img src="@/assets/images/maped2.svg" />
               <!--- harusnya image-->
               <h6>myBCA</h6>
             </div>
             <div class="button-inline-block logo-perbankan-pay text-center">
-              <img src="/images/stabilo.png" />
+              <img src="@/assets/images/stabilo.png" />
               <!--- harusnya image-->
               <h6>BRImo BRI</h6>
             </div>
             <div class="button-inline-block logo-perbankan-pay text-center">
-              <img src="/images/maped2.svg" />
+              <img src="@/assets/images/maped2.svg" />
               <!--- harusnya image-->
               <h6>myBCA</h6>
             </div>
@@ -211,8 +229,22 @@
 <script>
 export default {
   name: "Invoice",
+  data() {
+    return {
+      invoice: {},
+    };
+  },
+  computed: {
+    qrCode() {
+      if (!this.invoice.qris_response.rawqr) {
+        return "";
+      }
+
+      return this.$func.generateQrCode(this.invoice.qris_response.rawqr);
+    },
+  },
   mounted() {
-    console.log("invoice", this.$func.getFromLocalStorage("invoice"));
+    this.invoice = JSON.parse(this.$func.getFromLocalStorage("invoice")).data;
   },
 };
 </script>

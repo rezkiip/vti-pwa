@@ -360,6 +360,7 @@
                         :data-service="service.service"
                         :data-courier="service.courierCode"
                         :data-display="`${courier.parameter_name} (${service.name})`"
+                        :data-amount="service.price"
                       />
                       <div>
                         <p class="m-0">
@@ -796,7 +797,7 @@ export default {
           }
         });
 
-      this.courierService = `${selectedService.dataset.courier}|${selectedService.dataset.service}|${selectedService.dataset.display}`;
+      this.courierService = `${selectedService.dataset.courier}|${selectedService.dataset.service}|${selectedService.dataset.display}|${selectedService.dataset.amount}`;
       this.paymentStep++;
     },
     saveMethodData() {
@@ -903,21 +904,21 @@ export default {
           destination_contact_address: this.shippingRecipientData.address,
           destination_contact_email: loginData.customer.email,
           destination_note: this.shippingRecipientData.note,
-          delivery_note: "",
+          delivery_note: this.shippingRecipientData.note,
           items: [],
           transaction: {
             method_payment: this.method,
             unique_code: 1,
             customer_id: loginData.customer.customer_id,
             event_id: currentEvent.event_id,
-            subtotal: 45012,
+            subtotal: 0,
             shipping_charge: 0,
             fee_insurance: 0,
             is_insuranced: false,
             discount: 0,
-            total_value: 45012,
+            total_value: 0,
             total_cod: 0,
-            weight: 1,
+            weight: 0,
             width: 10,
             height: 10,
             length: 10,
@@ -946,13 +947,34 @@ export default {
           return result;
         });
 
+        let totalAmount = 0;
+        let totalWeight = 0;
+        reqBody.items.forEach((item) => {
+          totalAmount = totalAmount + Number(item.total_value);
+          totalWeight = totalWeight + Number(item.weight);
+        });
+
+        totalAmount = totalAmount + Number(this.courierService.split("|")[3]);
+
+        reqBody.transaction.subtotal = totalAmount;
+        reqBody.transaction.total_value = totalAmount;
+        reqBody.transaction.weight = totalWeight;
+
+        // console.log("reqBody", reqBody);
+
         const postResponse = await shipdeoService.createOrder(reqBody);
 
         if (!this.$func.isSuccessStatus(postResponse.status)) {
           throw new Error(postResponse.statusText);
         }
 
-        this.createInvoice();
+        // this.createInvoice();
+
+        this.$func.saveToLocalStorage(
+          "invoice",
+          JSON.stringify(postResponse.data)
+        );
+        this.$func.goTo("/invoice");
       } catch (err) {
         this.$func.showErrorSnackbar(err.message);
       } finally {
