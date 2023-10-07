@@ -443,7 +443,7 @@ export default {
           templates: regFormElementList,
         };
 
-        console.log("reqBody", reqBody);
+        // console.log("reqBody", reqBody);
 
         const submissionResponse = await templateService.submitFormRegistration(
           reqBody
