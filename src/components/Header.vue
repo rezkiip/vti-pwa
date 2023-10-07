@@ -118,8 +118,26 @@
       id="offcanvasBottom11"
       style="height: 35rem"
       aria-labelledby="offcanvasBottomLabel"
+      data-bs-backdrop="static"
     >
-      <div class="row" style="margin-top: 10px">
+      <div class="row justify-content-between mx-3 mt-3">
+        <a
+          @click.prevent="logout"
+          class="btn"
+          style="background-color: #e0240b; color: white; width: 30%"
+          v-if="logoutAvailable"
+        >
+          Logout
+        </a>
+        <button
+          type="button"
+          class="btn-close text-reset"
+          data-bs-dismiss="offcanvas"
+          aria-label="Close"
+        ></button>
+      </div>
+      <hr style="margin: 20px 0" />
+      <div class="row">
         <div class="col-3">
           <img
             src="@/assets/images/018m.jpg"
@@ -182,6 +200,11 @@ export default {
     };
   },
   computed: {
+    logoutAvailable() {
+      return (
+        localStorage.getItem("event") && localStorage.getItem("login-data")
+      );
+    },
     backAvailable() {
       if (this.$route.path === "/") {
         return false;
@@ -213,6 +236,13 @@ export default {
       const modal = new Modal("#modal-registration");
       modal.show();
       // }
+    },
+    logout() {
+      const currentEvent = JSON.parse(this.$func.getFromLocalStorage("event"));
+
+      localStorage.clear();
+
+      window.location.replace(currentEvent.permanent_link);
     },
   },
   mounted() {

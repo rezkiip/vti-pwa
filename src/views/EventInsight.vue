@@ -289,6 +289,7 @@
               id="offcanvasBottom"
               style="height: 39rem"
               aria-labelledby="offcanvasBottomLabel"
+              data-bs-backdrop="static"
             >
               <div class="offcanvas-header">
                 <h2 class="offcanvas-title" id="offcanvasBottomLabel">
@@ -306,6 +307,12 @@
                 >
                   {{ freeData1.totD }} Hari
                 </p>
+                <button
+                  type="button"
+                  class="btn-close text-reset"
+                  data-bs-dismiss="offcanvas"
+                  aria-label="Close"
+                ></button>
               </div>
               <div class="offcanvas-body">
                 <div class="list-group list-group-flush list-group-hoverable">
@@ -546,11 +553,18 @@
               id="offcanvasBottom4"
               style="height: 40rem"
               aria-labelledby="offcanvasBottomLabel"
+              data-bs-backdrop="static"
             >
               <div class="offcanvas-header">
                 <h2 class="offcanvas-title" id="offcanvasBottomLabel">
                   Lokasi / Acara Kegiatan
                 </h2>
+                <button
+                  type="button"
+                  class="btn-close text-reset"
+                  data-bs-dismiss="offcanvas"
+                  aria-label="Close"
+                ></button>
               </div>
               <div class="image-container">
                 <img class="cropped-image" src="@/assets/images/png.png" />
@@ -575,11 +589,18 @@
               id="offcanvasBottom5"
               style="height: 30rem"
               aria-labelledby="offcanvasBottomLabel"
+              data-bs-backdrop="static"
             >
               <div class="offcanvas-header">
                 <h2 class="offcanvas-title" id="offcanvasBottomLabel">
                   QR Check-In
                 </h2>
+                <button
+                  type="button"
+                  class="btn-close text-reset"
+                  data-bs-dismiss="offcanvas"
+                  aria-label="Close"
+                ></button>
               </div>
               <div style="align-content: center; height: 14rem">
                 <img
@@ -601,11 +622,18 @@
               id="offcanvasBottom6"
               style="height: 30rem"
               aria-labelledby="offcanvasBottomLabel"
+              data-bs-backdrop="static"
             >
               <div class="offcanvas-header">
                 <h2 class="offcanvas-title" id="offcanvasBottomLabel">
                   Item / Produk
                 </h2>
+                <button
+                  type="button"
+                  class="btn-close text-reset"
+                  data-bs-dismiss="offcanvas"
+                  aria-label="Close"
+                ></button>
               </div>
 
               <div
@@ -645,6 +673,7 @@
               id="offcanvasBottom7"
               style="height: 30rem"
               aria-labelledby="offcanvasBottomLabel"
+              data-bs-backdrop="static"
             >
               <div class="offcanvas-header">
                 <h2 class="offcanvas-title" id="offcanvasBottomLabel">
@@ -662,6 +691,12 @@
                 >
                   {{ JSON.parse(currentEvent.prize_category).length }} Kategori
                 </p>
+                <button
+                  type="button"
+                  class="btn-close text-reset"
+                  data-bs-dismiss="offcanvas"
+                  aria-label="Close"
+                ></button>
               </div>
               <div style="margin: 0 2rem" class="carousel-container">
                 <img src="@/assets/images/banner_1.jpg" />
@@ -709,16 +744,23 @@
               id="offcanvasBottom8"
               style="height: 35rem; overflow-y: auto"
               aria-labelledby="offcanvasBottomLabel"
+              data-bs-backdrop="static"
             >
               <div class="offcanvas-header">
                 <h2 class="offcanvas-title" id="offcanvasBottomLabel">
                   Form Pendaftaran
                 </h2>
+                <button
+                  type="button"
+                  class="btn-close text-reset"
+                  data-bs-dismiss="offcanvas"
+                  aria-label="Close"
+                ></button>
               </div>
 
               <div class="mb-3" v-for="(regForm, k) in regFormList" :key="k">
                 <p style="margin-left: 1.5rem">
-                  {{ `${k + 1} ${regForm.question}` }}
+                  {{ `${k + 1}. ${regForm.question}` }}
                 </p>
                 <!-- <label
                   style="margin-left: 1rem"
@@ -848,15 +890,25 @@
               id="offcanvasBottom10"
               style="height: 38rem"
               aria-labelledby="offcanvasBottomLabel"
+              data-bs-backdrop="static"
             >
               <div class="offcanvas-header">
                 <h2 class="offcanvas-title" id="offcanvasBottomLabel">
                   Form Upload
                 </h2>
+                <button
+                  type="button"
+                  class="btn-close text-reset"
+                  data-bs-dismiss="offcanvas"
+                  aria-label="Close"
+                ></button>
               </div>
 
               <div class="mb-3" v-for="(subForm, k) in subFormList" :key="k">
-                <label
+                <p style="margin-left: 1.5rem">
+                  {{ `${k + 1}. ${subForm.question}` }}
+                </p>
+                <!-- <label
                   style="margin-left: 1rem"
                   class="form-label"
                   :class="{
@@ -961,7 +1013,7 @@
                     class="form-control"
                     style="margin: 20px 0"
                   />
-                </div>
+                </div> -->
               </div>
 
               <!-- <div class="mb-3">
@@ -1630,13 +1682,21 @@ export default {
         )
       ).data.templates;
 
-      this.regFormList = regFormList.filter((t) => {
-        const selectedTemplates = JSON.parse(
-          this.currentEvent.select_form_registration
-        );
+      // this.regFormList = regFormList.filter((t) => {
+      //   const selectedTemplates = JSON.parse(
+      //     this.currentEvent.select_form_registration
+      //   );
 
-        return selectedTemplates.indexOf(t.template_id) >= 0;
-      });
+      //   return selectedTemplates.indexOf(t.template_id) >= 0;
+      // });
+
+      this.regFormList = JSON.parse(
+        this.currentEvent.select_form_registration
+      ).map((regForm) =>
+        regFormList.find(
+          (availableRegForm) => availableRegForm.template_id === regForm
+        )
+      );
     },
     async getCompanySubmissionForms() {
       const subFormList = (

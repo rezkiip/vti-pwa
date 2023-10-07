@@ -97,7 +97,7 @@
                   </label>
                   <label class="form-check" v-else>
                     <input
-                      name="radio"
+                      :name="regForm.template_id"
                       :data-option="i"
                       class="form-check-input reg-form"
                       type="radio"
@@ -110,6 +110,7 @@
                       class="form-control other-option"
                       autocomplete="off"
                       :data-id="regForm.template_id"
+                      :placeholder="option.split('__other:')[1]"
                     />
                   </label>
                 </div>
@@ -136,7 +137,7 @@
                     v-if="!option.startsWith('__other:')"
                   >
                     <input
-                      name="checkbox"
+                      :name="regForm.template_id"
                       :data-option="i"
                       class="form-check-input reg-form"
                       type="checkbox"
@@ -148,7 +149,7 @@
                   </label>
                   <label class="form-check" v-else>
                     <input
-                      name="checkbox"
+                      :name="regForm.template_id"
                       :data-option="i"
                       class="form-check-input reg-form"
                       type="checkbox"
@@ -161,6 +162,7 @@
                       class="form-control other-option"
                       autocomplete="off"
                       :data-id="regForm.template_id"
+                      :placeholder="option.split('__other:')[1]"
                     />
                   </label>
                 </div>
