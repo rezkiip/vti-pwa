@@ -445,17 +445,17 @@ export default {
 
         console.log("reqBody", reqBody);
 
-        // const submissionResponse = await templateService.submitFormRegistration(
-        //   reqBody
-        // );
+        const submissionResponse = await templateService.submitFormRegistration(
+          reqBody
+        );
 
-        // if (!this.$func.isSuccessStatus(submissionResponse.status)) {
-        //   throw new Error(submissionResponse.statusText);
-        // }
+        if (!this.$func.isSuccessStatus(submissionResponse.status)) {
+          throw new Error(submissionResponse.statusText);
+        }
 
-        // loginData.submittedRegistrationForm = true;
-        // this.$func.saveToLocalStorage("login-data", JSON.stringify(loginData));
-        // this.$func.goTo("/product-checkout");
+        loginData.submittedRegistrationForm = true;
+        this.$func.saveToLocalStorage("login-data", JSON.stringify(loginData));
+        this.$func.goTo("/product-checkout");
       } catch (err) {
         this.$func.showErrorSnackbar(err.message);
       } finally {
