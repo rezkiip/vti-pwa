@@ -40,9 +40,7 @@
         <div class="card-body">
           <div class="tab-content">
             <div class="tab-pane active show" id="tabs-desk-5">
-              <div class="mb-5">
-                {{ currentEvent.event_description }}
-              </div>
+              <div class="mb-5" v-html="eventDescription"></div>
               <div style="background-color: #f9fafc">
                 <p style="text-align: center">
                   Ada hal lain yang ingin ditanyakan terkait acara yang
@@ -83,9 +81,8 @@
               id="tabs-pert-5"
               v-for="(additionalTab, i) in freeData3"
               :key="i"
-            >
-              {{ additionalTab.content }}
-            </div>
+              v-html="additionalTab.content.replaceAll('\n', '<br />')"
+            ></div>
             <div class="tab-pane" id="tabs-hadiah-5">
               {{ currentEvent.prize_description }}
             </div>
@@ -477,6 +474,9 @@ export default {
       }
 
       return "";
+    },
+    eventDescription() {
+      return this.currentEvent.event_description.replaceAll("\n", "<br />");
     },
   },
   methods: {

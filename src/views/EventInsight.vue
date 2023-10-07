@@ -1267,15 +1267,23 @@
                   <p>
                     {{ currentEvent.short_description }}
                   </p>
-                  <p class="text-muted" style="font-size: 11.5px">
-                    Deskripsi
-                    <span class="badge bg-grey" style="margin: 0 14px"></span>
-                    Peraturan
-                    <span class="badge bg-grey" style="margin: 0 14px"></span>
-                    Hadiah
-                    <span class="badge bg-grey" style="margin: 0 14px"></span>
-                    Upload
-                  </p>
+                  <div class="text-muted" style="font-size: 11.5px">
+                    <div class="d-inline">
+                      Deskripsi
+                      <span class="badge bg-grey" style="margin: 0 14px"></span>
+                    </div>
+                    <div
+                      class="d-inline"
+                      v-for="(additionalTab, i) in JSON.parse(
+                        currentEvent.free_data3
+                      )"
+                      :key="i"
+                    >
+                      {{ additionalTab.title }}
+                      <span class="badge bg-grey" style="margin: 0 14px"></span>
+                    </div>
+                    <div class="d-inline">Hadiah</div>
+                  </div>
                 </div>
               </div>
             </a>
