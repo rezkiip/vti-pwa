@@ -85,7 +85,7 @@
                     v-if="!option.startsWith('__other:')"
                   >
                     <input
-                      name="radio"
+                      :name="regForm.template_id"
                       :data-option="i"
                       class="form-check-input reg-form"
                       type="radio"

@@ -717,7 +717,10 @@
               </div>
 
               <div class="mb-3" v-for="(regForm, k) in regFormList" :key="k">
-                <label
+                <p style="margin-left: 1.5rem">
+                  {{ `${k + 1} ${regForm.question}` }}
+                </p>
+                <!-- <label
                   style="margin-left: 1rem"
                   class="form-label"
                   :class="{
@@ -831,7 +834,7 @@
                     class="form-control w-25 input-registration-time"
                     placeholder="00:00"
                   />
-                </div>
+                </div> -->
               </div>
 
               <div style="margin: 0 2rem">
