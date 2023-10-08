@@ -2,6 +2,8 @@ import Router from './Router';
 import StringUtils from './StringUtils';
 import QRCode from 'qrcode-generator';
 import * as EmailValidator from 'email-validator';
+import Constants from './Constants';
+import axios from 'axios';
 
 export default {
   goTo(page) {
@@ -98,10 +100,11 @@ export default {
   validEmail(email) {
     return EmailValidator.validate(email);
   },
-  handleImageUpload(file) {
+  handleImageUpload(file, imgElement) {
     const reader = new FileReader();
     reader.onload = function () {
       const dataUrl = reader.result;
+      document.querySelector(imgElement).dataset.value = dataUrl
       // const img = document.querySelector(imgElement);
       // img.style.backgroundImage = `url(${dataUrl})`;
       // img.dataset.url = dataUrl;
@@ -113,5 +116,18 @@ export default {
       }
     };
     reader.readAsDataURL(file);
+  },
+  uploadImageToCloudinary(imgData, tags = '') {
+    const formData = new FormData();
+    const cloudinaryUploadURL = `https://api.cloudinary.com/v1_1/${Constants.CLOUDINARY_CLOUD_NAME}/upload`;
+    formData.append('upload_preset', Constants.CLOUDINARY_PRESET);
+    formData.append('tags', tags);
+    formData.append('file', imgData);
+
+    return axios({
+      url: cloudinaryUploadURL,
+      method: 'POST',
+      data: formData,
+    });
   },
 }

@@ -90,116 +90,240 @@
             ></div>
 
             <div class="tab-pane page-wrapper" id="tabs-submit-5">
-              <div class="page-body">
-                <div class="container-xl">
+              <form @submit.prevent="submitSubmission" class="page-body">
+                <div class="container-xl pb-5">
                   <div class="row row-cards">
                     <div
                       class="col-md-6"
-                      v-for="(subForm, i) in subFormList"
-                      :key="i"
+                      v-for="(subForm, k) in subFormList"
+                      :key="k"
                     >
-                      <div class="card">
+                      <div
+                        class="form-floating mb-3"
+                        v-if="subForm.question_type === 'Short Answer'"
+                      >
+                        <input
+                          type="text"
+                          id="floating-text"
+                          class="form-control sub-form"
+                          autocomplete="off"
+                          :data-id="subForm.template_id"
+                          :data-question="subForm.question_type"
+                        />
+                        <label for="floating-text"
+                          >{{ subForm.question }}
+                          <span
+                            style="color: red"
+                            v-if="subForm.required === 'Y'"
+                            >*</span
+                          ></label
+                        >
+                        <small class="text-secondary">
+                          {{ subForm.description }}
+                        </small>
+                      </div>
+                      <div
+                        class="mb-3"
+                        v-else-if="subForm.question_type === 'Long Answer'"
+                      >
+                        <label for="floating-textarea" class="d-block"
+                          >{{ subForm.question }}
+                          <span
+                            style="color: red"
+                            v-if="subForm.required === 'Y'"
+                            >*</span
+                          ></label
+                        >
+                        <textarea
+                          id="floating-textarea"
+                          class="form-contro sub-form"
+                          style="width: 100%"
+                          data-bs-toggle="autosize"
+                          :data-id="subForm.template_id"
+                          :data-question="subForm.question_type"
+                        ></textarea>
+                        <small class="text-secondary">
+                          {{ subForm.description }}
+                        </small>
+                      </div>
+                      <div
+                        class="mb-3"
+                        v-else-if="subForm.question_type === 'Single Choice'"
+                      >
+                        <div class="form-label">
+                          {{ subForm.question }}
+                          <span
+                            style="color: red"
+                            v-if="subForm.required === 'Y'"
+                          >
+                            *
+                          </span>
+                        </div>
+                        <div
+                          v-for="(option, i) in JSON.parse(subForm.free_data1)"
+                          :key="i"
+                        >
+                          <label
+                            class="form-check"
+                            v-if="!option.startsWith('__other:')"
+                          >
+                            <input
+                              :name="subForm.template_id"
+                              :data-option="i"
+                              class="form-check-input sub-form"
+                              type="radio"
+                              :value="option"
+                              :data-id="subForm.template_id"
+                              :data-question="subForm.question_type"
+                            />
+                            <span
+                              class="form-check-label"
+                              v-text="option"
+                            ></span>
+                          </label>
+                          <label class="form-check" v-else>
+                            <input
+                              :name="subForm.template_id"
+                              :data-option="i"
+                              class="form-check-input sub-form"
+                              type="radio"
+                              :value="option"
+                              :data-id="subForm.template_id"
+                              :data-question="subForm.question_type"
+                            />
+                            <input
+                              type="text"
+                              class="form-control other-option"
+                              autocomplete="off"
+                              :data-id="subForm.template_id"
+                              :placeholder="option.split('__other:')[1]"
+                            />
+                          </label>
+                        </div>
+                        <small class="text-secondary">
+                          {{ subForm.description }}
+                        </small>
+                      </div>
+                      <div
+                        class="mb-3"
+                        v-else-if="subForm.question_type === 'Multiple Choice'"
+                      >
+                        <div class="form-label">
+                          {{ subForm.question }}
+                          <span
+                            style="color: red"
+                            v-if="subForm.required === 'Y'"
+                          >
+                            *
+                          </span>
+                        </div>
+                        <div
+                          v-for="(option, i) in JSON.parse(subForm.free_data1)"
+                          :key="i"
+                        >
+                          <label
+                            class="form-check"
+                            v-if="!option.startsWith('__other:')"
+                          >
+                            <input
+                              :name="subForm.template_id"
+                              :data-option="i"
+                              class="form-check-input sub-form"
+                              type="checkbox"
+                              :value="option"
+                              :data-id="subForm.template_id"
+                              :data-question="subForm.question_type"
+                            />
+                            <span
+                              class="form-check-label"
+                              v-text="option"
+                            ></span>
+                          </label>
+                          <label class="form-check" v-else>
+                            <input
+                              :name="subForm.template_id"
+                              :data-option="i"
+                              class="form-check-input sub-form"
+                              type="checkbox"
+                              :value="option"
+                              :data-id="subForm.template_id"
+                              :data-question="subForm.question_type"
+                            />
+                            <input
+                              type="text"
+                              class="form-control other-option"
+                              autocomplete="off"
+                              :data-id="subForm.template_id"
+                              :placeholder="option.split('__other:')[1]"
+                            />
+                          </label>
+                        </div>
+                        <small class="text-secondary">
+                          {{ subForm.description }}
+                        </small>
+                      </div>
+                      <div
+                        class="form-floating mb-3"
+                        v-else-if="subForm.question_type === 'Dropdown'"
+                      >
+                        <select
+                          type="text"
+                          class="form-select sub-form"
+                          :data-id="subForm.template_id"
+                          :data-question="subForm.question_type"
+                        >
+                          <option
+                            v-for="(option, i) in JSON.parse(
+                              subForm.free_data1
+                            )"
+                            :key="i"
+                            :data-option="i"
+                          >
+                            {{ option }}
+                          </option>
+                        </select>
+                        <label for="floating-textarea">
+                          {{ subForm.question }}
+                          <span
+                            style="color: red"
+                            v-if="subForm.required === 'Y'"
+                          >
+                            *
+                          </span>
+                        </label>
+                        <small class="text-secondary">
+                          {{ subForm.description }}
+                        </small>
+                      </div>
+                      <div
+                        class="card mb-3 form-floating"
+                        v-else-if="subForm.question_type === 'File Upload'"
+                      >
                         <div class="card-body">
-                          <h3 class="card-title">
-                            {{ subForm.question }}
-                          </h3>
-                          <form
-                            class="dropzone"
-                            id="dropzone-default"
-                            action="./"
-                            autocomplete="off"
-                            novalidate
-                            v-if="subForm.question_type === 'File Upload'"
+                          <label :for="`floating-file-upload-${k}`" class="mb-2"
+                            >{{ subForm.question }}
+                            <span
+                              style="color: red"
+                              v-if="subForm.required === 'Y'"
+                              >*</span
+                            ></label
                           >
-                            <div class="fallback">
-                              <input name="file" type="file" />
-                            </div>
-                          </form>
                           <input
-                            :type="
-                              JSON.parse(subForm.validation).number === 'Y'
-                                ? 'number'
-                                : 'text'
-                            "
-                            class="form-control"
-                            v-else-if="subForm.question_type === 'Short Answer'"
+                            type="file"
+                            class="sub-form mb-2"
+                            :data-id="subForm.template_id"
+                            v-for="m in JSON.parse(subForm.validation)
+                              .number_of_files"
+                            :key="m"
+                            :id="`floating-file-upload-${k}-${m}`"
+                            :data-question="subForm.question_type"
+                            @change="uploadFile($event, k, m)"
                           />
-                          <textarea
-                            class="form-control"
-                            data-bs-toggle="autosize"
-                            v-else-if="subForm.question_type === 'textarea'"
-                          ></textarea>
-                          <div
-                            v-else-if="
-                              subForm.question_type === 'Single Choice'
-                            "
-                          >
-                            <div
-                              v-for="(option, i) in JSON.parse(
-                                subForm.free_data1
-                              )"
-                              class="d-inline-block me-3"
-                              :key="i"
-                            >
-                              <label class="form-check">
-                                <input
-                                  name="radio"
-                                  :data-option="i"
-                                  class="form-check-input"
-                                  type="radio"
-                                />
-                                <span
-                                  class="form-check-label"
-                                  v-text="option"
-                                ></span>
-                              </label>
-                            </div>
-                          </div>
-                          <div
-                            v-else-if="
-                              subForm.question_type === 'Multiple Choice'
-                            "
-                          >
-                            <div
-                              v-for="(option, i) in JSON.parse(
-                                subForm.free_data1
-                              )"
-                              class="d-inline-block me-3"
-                              :key="i"
-                            >
-                              <label class="form-check">
-                                <input
-                                  name="checkbox"
-                                  :data-option="i"
-                                  class="form-check-input"
-                                  type="checkbox"
-                                />
-                                <span
-                                  class="form-check-label"
-                                  v-text="option"
-                                ></span>
-                              </label>
-                            </div>
-                          </div>
-                          <div v-else-if="subForm.question_type === 'Dropdown'">
-                            <select type="text" class="form-select">
-                              <option
-                                v-for="(option, i) in JSON.parse(
-                                  subForm.free_data1
-                                )"
-                                :key="i"
-                                :data-option="i"
-                              >
-                                {{ option }}
-                              </option>
-                            </select>
-                          </div>
+                          <small class="text-secondary d-block mt-2">
+                            {{ subForm.description }}
+                          </small>
                         </div>
                       </div>
-                      <p class="text-muted">
-                        {{ subForm.description }}
-                      </p>
-                      <hr v-if="i < subFormList.length - 1" />
                     </div>
                     <!-- <p class="text-muted">
                       Video harus memperlihatkan proses peserta ketika mewarnai
@@ -231,10 +355,13 @@
                   </div>
                 </div>
                 <footer class="fixed-bottom">
-                  <div class="row" style="margin: 7rem 0 0 0">
+                  <div
+                    class="row justify-content-center align-items-center"
+                    style="background-color: white; height: 70px"
+                  >
                     <div class="col-10">
-                      <a
-                        @click="$func.goTo('/product-checkout')"
+                      <button
+                        type="submit"
                         class="btn"
                         data-bs-target="#modal-simple"
                         style="
@@ -244,9 +371,9 @@
                         "
                       >
                         KIRIM
-                      </a>
+                      </button>
                     </div>
-                    <div class="col-2">
+                    <!-- <div class="col-2">
                       <a href="#">
                         <img
                           src="@/assets/images/plus.svg"
@@ -254,10 +381,10 @@
                           style="height: 2.5rem"
                         />
                       </a>
-                    </div>
+                    </div> -->
                   </div>
                 </footer>
-              </div>
+              </form>
             </div>
           </div>
         </div>
@@ -414,6 +541,7 @@ import SplashScreen from "../components/SplashScreen.vue";
 import templateService from "@/service/template";
 import accountService from "@/service/account";
 import { Modal } from "bootstrap";
+import Vue from "vue";
 
 export default {
   name: "AboutEvent",
@@ -478,10 +606,40 @@ export default {
       return "";
     },
     eventDescription() {
-      return this.currentEvent.event_description.replaceAll("\n", "<br />");
+      return this.currentEvent.description_event.replaceAll("\n", "<br />");
     },
   },
   methods: {
+    uploadFile(evt, subFormIndex, fileIndex) {
+      try {
+        // const subForm = this.subFormList[idx];
+        const file = evt.target.files || evt.dataTransfer.files;
+
+        Vue.nextTick(() => {
+          for (const f of file) {
+            if (!f.type.startsWith("image/")) {
+              evt.target.value = null;
+
+              document.querySelector("#snackbar-popup").innerHTML =
+                "File yang dapat diupload hanya berupa gambar";
+              document.querySelector("#snackbar-popup").classList.add("show");
+              setTimeout(() => {
+                document
+                  .querySelector("#snackbar-popup")
+                  .classList.remove("show");
+              }, 3000);
+            }
+
+            this.$func.handleImageUpload(
+              f,
+              `#floating-file-upload-${subFormIndex}-${fileIndex}`
+            );
+          }
+        });
+      } catch (err) {
+        this.$func.showErrorSnackbar(err.message);
+      }
+    },
     handleCtaBtn() {
       if (
         !this.participantStatus.loggedIn &&
@@ -689,6 +847,172 @@ export default {
         this.isRegistration = true;
         this.$refs.registrationForm.reset();
       });
+    },
+    async submitSubmission() {
+      this.$func.loading();
+      try {
+        const loginData = this.$func.getLoginData();
+
+        // add participant
+        const participantResponse = await accountService.addParticipant({
+          customer_id: loginData.customer.customer_id,
+          event_id: this.currentEvent.event_id,
+        });
+
+        if (
+          !this.$func.isSuccessStatus(participantResponse.status) &&
+          participantResponse.statusText !== "Anda sudah terdaftar"
+        ) {
+          throw new Error(participantResponse.statusText);
+        }
+
+        let subFormElementList = Array.from(
+          document.querySelectorAll(".sub-form")
+        )
+          .filter((subForm) => {
+            if (
+              subForm.dataset.question === "Multiple Choice" ||
+              subForm.dataset.question === "Single Choice"
+            ) {
+              return subForm.checked;
+            }
+
+            return !!subForm.value;
+          })
+          .map((subForm) => ({
+            template_id: subForm.dataset.id,
+            answer: subForm.value,
+          }));
+
+        const subFormSet = new Set();
+        const subFormMap = new Map();
+        subFormElementList.forEach((subForm) => {
+          if (subForm.answer.startsWith("__other:")) {
+            subForm.answer = document.querySelector(
+              `.other-option[data-id=${subForm.template_id}]`
+            ).value;
+          }
+
+          if (subFormMap.has(subForm.template_id)) {
+            subFormMap.set(
+              subForm.template_id,
+              subFormMap.get(subForm.template_id) + "," + subForm.answer
+            );
+          } else {
+            subFormMap.set(subForm.template_id, subForm.answer);
+          }
+        });
+
+        for (const [key, value] of subFormMap.entries()) {
+          subFormElementList = subFormElementList.map((subForm) => {
+            if (subForm.template_id === key) {
+              subForm.answer = value;
+            }
+
+            return subForm;
+          });
+        }
+
+        const newSubFormElementList = [];
+        subFormElementList.forEach((subForm) => {
+          if (!subFormSet.has(subForm.template_id)) {
+            subFormSet.add(subForm.template_id);
+            newSubFormElementList.push(subForm);
+          }
+        });
+
+        subFormElementList = newSubFormElementList;
+
+        subFormElementList.forEach((subForm) => {
+          const masterForm = this.subFormList.find(
+            (availableForm) => availableForm.template_id === subForm.template_id
+          );
+
+          if (
+            masterForm.question_type === "Time" &&
+            subForm.answer.toLowerCase() === "hh:mm"
+          ) {
+            subForm.delete = true;
+          } else if (
+            masterForm.question_type === "Date" &&
+            subForm.answer.toLowerCase() === "dd/mm/yyyy"
+          ) {
+            subForm.delete = true;
+          }
+        });
+
+        subFormElementList = subFormElementList.filter(
+          (subForm) => !subForm.delete
+        );
+
+        for (const availableForm of this.subFormList) {
+          if (
+            availableForm.required === "Y" &&
+            subFormElementList
+              .map((subForm) => subForm.template_id)
+              .indexOf(availableForm.template_id) < 0
+          ) {
+            throw new Error(`Form ${availableForm.template_name} wajib diisi`);
+          }
+        }
+
+        for (const subForm of subFormElementList) {
+          const availableForm = this.subFormList.find(
+            (form) => form.template_id === subForm.template_id
+          );
+
+          if (availableForm.question_type === "Short Answer") {
+            const validation = JSON.parse(availableForm.validation);
+
+            if (validation.number === "Y" && isNaN(subForm.answer)) {
+              throw new Error(
+                `Form ${availableForm.template_name} harus berupa angka`
+              );
+            }
+          } else if (availableForm.question_type === "File Upload") {
+            const base64values = subForm.answer.split(",").map((ans, i) => {
+              return document.querySelectorAll(
+                `.sub-form[data-id="${subForm.template_id}"]`
+              )[i].dataset.value;
+            });
+
+            const urlValues = [];
+            for (const b64 of base64values) {
+              const imgUploadResponse = (
+                await this.$func.uploadImageToCloudinary(b64, "submission")
+              ).data;
+
+              urlValues.push(imgUploadResponse.secure_url);
+            }
+
+            subForm.answer = urlValues.join(",");
+          }
+        }
+
+        const reqBody = {
+          customer_id: loginData.customer.customer_id,
+          event_id: this.currentEvent.event_id,
+          templates: subFormElementList,
+        };
+
+        console.log("reqBody", reqBody);
+
+        //   const submissionResponse = await templateService.submitFormRegistration(
+        //     reqBody
+        //   );
+
+        //   if (!this.$func.isSuccessStatus(submissionResponse.status)) {
+        //     throw new Error(submissionResponse.statusText);
+        //   }
+
+        //   loginData.submittedRegistrationForm = true;
+        //   this.$func.saveToLocalStorage("login-data", JSON.stringify(loginData));
+        //   this.$func.goTo("/product-checkout");
+      } catch (err) {
+        this.$func.showErrorSnackbar(err.message);
+      } finally {
+        this.$func.finishLoading();
+      }
     },
   },
   async mounted() {

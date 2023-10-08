@@ -567,18 +567,24 @@
                 ></button>
               </div>
               <div class="image-container">
-                <img class="cropped-image" src="@/assets/images/png.png" />
+                <embed
+                  :src="`https://www.google.com/maps/place/${strLatLong}?output=embed`"
+                  type=""
+                />
               </div>
-              <div class="corner-up-right-lokasi">
+              <a
+                :href="`https://www.google.com/maps/place/${strLatLong}?output=embed`"
+                target="_blank"
+                class="d-block corner-up-right-lokasi"
+              >
                 <img src="@/assets/images/corner-up-right.svg" />
-              </div>
+              </a>
               <div style="margin: 2rem 2rem">
                 <p style="font-weight: 700; font-size: 20px; line-height: 0.3">
-                  Ganesha Cultural Center
+                  {{ locationOffline.placeName }}
                 </p>
                 <p>
-                  Jl. Tamansari No.73, Lb. Siliwangi, Kecamatan Coblong, Kota
-                  Bandung, Jawa Barat 40132
+                  {{ locationOffline.address }}
                 </p>
               </div>
             </div>
@@ -1476,6 +1482,34 @@ export default {
     };
   },
   computed: {
+    locationOffline() {
+      try {
+        if (
+          !this.currentEvent.location ||
+          !this.currentEvent.location_offline ||
+          this.currentEvent.location !== "offline"
+        ) {
+          return {};
+        }
+
+        return JSON.parse(this.currentEvent.location_offline);
+      } catch {
+        return {};
+      }
+    },
+    strLatLong() {
+      try {
+        const city = this.locationOffline.city;
+
+        if (city) {
+          return `${city.lat},${city.long}`;
+        }
+
+        return "";
+      } catch {
+        return "";
+      }
+    },
     ctaText() {
       if (this.currentEvent.type === "UPCOMING") {
         return "AKAN DATANG";
@@ -1722,13 +1756,21 @@ export default {
         )
       ).data.templates;
 
-      this.subFormList = subFormList.filter((t) => {
-        const selectedTemplates = JSON.parse(
-          this.currentEvent.submission_online_select_form
-        );
+      // this.subFormList = subFormList.filter((t) => {
+      //   const selectedTemplates = JSON.parse(
+      //     this.currentEvent.submission_online_select_form
+      //   );
 
-        return selectedTemplates.indexOf(t.template_id) >= 0;
-      });
+      //   return selectedTemplates.indexOf(t.template_id) >= 0;
+      // });
+
+      this.subFormList = JSON.parse(
+        this.currentEvent.submission_online_select_form
+      ).map((subForm) =>
+        subFormList.find(
+          (availableSubForm) => availableSubForm.template_id === subForm
+        )
+      );
     },
     async checkParticipantStatus() {
       const loginData = this.$func.getLoginData();
