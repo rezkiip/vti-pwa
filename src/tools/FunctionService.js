@@ -97,5 +97,21 @@ export default {
   },
   validEmail(email) {
     return EmailValidator.validate(email);
-  }
+  },
+  handleImageUpload(file) {
+    const reader = new FileReader();
+    reader.onload = function () {
+      const dataUrl = reader.result;
+      // const img = document.querySelector(imgElement);
+      // img.style.backgroundImage = `url(${dataUrl})`;
+      // img.dataset.url = dataUrl;
+      // img.querySelector(".icon").style.display = "none";
+      // img.querySelector(".avatar-upload-text").classList.add("uploaded");
+
+      if (document.querySelector("#prev_img")) {
+        document.querySelector("#prev_img").style.backgroundImage = `url(${dataUrl})`;
+      }
+    };
+    reader.readAsDataURL(file);
+  },
 }

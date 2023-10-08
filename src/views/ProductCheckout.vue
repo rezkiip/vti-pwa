@@ -3,7 +3,7 @@
     <splash-screen v-if="isBusyAll" />
     <div class="container" style="background-color: white">
       <div class="">
-        <div
+        <!-- <div
           style="background-color: #c6e7ff; margin: 5px 0 0 0"
           class="d-flex justify-content-between align-items-center p-2"
         >
@@ -14,9 +14,9 @@
             style="height: 17px"
             class="d-inline-block"
           />
-        </div>
+        </div> -->
 
-        <div
+        <!-- <div
           style="background-color: #c6e7ff; margin: 5px 0 0 0"
           class="d-flex justify-content-between align-items-center p-2"
         >
@@ -28,9 +28,9 @@
             alt=""
             style="height: 17px"
           />
-        </div>
+        </div> -->
 
-        <a
+        <!-- <a
           style="
             background-color: #c6e7ff;
             margin: 5px 0 0 0;
@@ -47,7 +47,7 @@
             alt=""
             style="height: 17px"
           />
-        </a>
+        </a> -->
 
         <div class="col-lg-6" style="margin: 15px 0 15px 0">
           <div class="row">
@@ -58,12 +58,13 @@
               href="#offcanvasBottom"
               role="button"
             >
-              <div class="col text-start">
-                <img
+              <div class="col text-start d-flex align-items-center">
+                <!-- <img
                   style="position: relative; top: 10px; right: 3px"
                   src="@/assets/images/home-2.svg"
                   alt=""
-                />
+                /> -->
+                <div class="checkout-step active">1</div>
               </div>
               <div
                 class="col"
@@ -92,8 +93,8 @@
               href="#offcanvasBottom1"
               role="button"
             >
-              <div class="col text-start">
-                <svg
+              <div class="col text-start d-flex align-items-center">
+                <!-- <svg
                   style="position: relative; top: 10px; right: 4px"
                   xmlns="http://www.w3.org/2000/svg"
                   class="icon icon-tabler icon-tabler-package-import"
@@ -113,7 +114,13 @@
                   <path d="M12 12l-8 -4.5" />
                   <path d="M22 18h-7" />
                   <path d="M18 15l-3 3l3 3" />
-                </svg>
+                </svg> -->
+                <div
+                  class="checkout-step"
+                  :class="{ active: paymentStep >= 2 }"
+                >
+                  2
+                </div>
               </div>
               <div
                 class="col"
@@ -146,8 +153,8 @@
                 disabled: paymentStep < 2,
               }"
             >
-              <div class="col text-start">
-                <svg
+              <div class="col text-start d-flex align-items-center">
+                <!-- <svg
                   style="position: relative; top: 10px; right: 3px"
                   xmlns="http://www.w3.org/2000/svg"
                   class="icon icon-tabler icon-tabler-building-bank"
@@ -169,7 +176,13 @@
                   <path d="M8 14l0 3" />
                   <path d="M12 14l0 3" />
                   <path d="M16 14l0 3" />
-                </svg>
+                </svg> -->
+                <div
+                  class="checkout-step"
+                  :class="{ active: paymentStep >= 3 }"
+                >
+                  3
+                </div>
               </div>
               <div
                 class="col"
@@ -195,9 +208,14 @@
           data-bs-backdrop="static"
           data-bs-keyboard="false"
         >
-          <div class="card-header">
+          <div class="card-header d-flex justify-content-between">
             <h2 style="margin-top: 10px">Data Penerima</h2>
-            <br />
+            <button
+              type="button"
+              class="btn-close text-reset"
+              data-bs-dismiss="offcanvas"
+              aria-label="Close"
+            ></button>
           </div>
           <div class="card-body pb-5" style="margin: 0 2rem; overflow-y: auto">
             <div class="mb-3 row">
@@ -303,9 +321,14 @@
           data-bs-backdrop="static"
           data-bs-keyboard="false"
         >
-          <div class="card-header">
-            <h3 style="margin: 2rem 6.5rem">Jasa Pengiriman</h3>
-            <br />
+          <div class="card-header d-flex justify-content-between">
+            <h3 style="margin-top: 10px">Jasa Pengiriman</h3>
+            <button
+              type="button"
+              class="btn-close text-reset"
+              data-bs-dismiss="offcanvas"
+              aria-label="Close"
+            ></button>
           </div>
 
           <div class="offcanvas-body">
@@ -504,7 +527,7 @@
           </div>
         </div>
         <hr />
-        <div class="" style="margin-bottom: 4rem">
+        <div class="" style="padding-bottom: 4rem">
           <!-- item card  -->
           <div class="card" v-for="(product, i) in productList" :key="i">
             <div class="card-body p-0 row">
@@ -526,7 +549,7 @@
                 <div class="col-8 d-flex align-items-center">
                   <h4 style="font-size: 12px; font-weight: bold" class="m-0">
                     Rp {{ $func.formatAmount(product.price) }}
-                    <span style="color: red" v-if="product.optional !== 'N'"
+                    <span style="color: red" v-if="product.optional !== 'Y'"
                       >*</span
                     >
                   </h4>
@@ -693,7 +716,11 @@ export default {
     decreaseQty(product_id) {
       this.productList = this.productList.map((p) => {
         if (p.product_id === product_id) {
-          if (p.qty > 0) {
+          if (
+            p.qty > 0 &&
+            (p.optional === "Y" ||
+              (p.optional === "N" && Number(p.min_stock) < Number(p.qty)))
+          ) {
             p.qty = p.qty - 1;
           }
         }
@@ -704,7 +731,12 @@ export default {
     increaseQty(product_id) {
       this.productList = this.productList.map((p) => {
         if (p.product_id === product_id) {
-          p.qty = p.qty + 1;
+          if (
+            p.max_quantity === "N" ||
+            (p.max_quantity === "Y" && Number(p.max_stock) > Number(p.qty))
+          ) {
+            p.qty = p.qty + 1;
+          }
         }
 
         return p;
@@ -727,15 +759,15 @@ export default {
           couriers: ["sicepat", "anteraja", "ninja", "jnt", "jne", "sap", "sc"],
           items: [
             {
-              name: "",
-              description: "",
-              weight: "",
+              name: "a",
+              description: "b",
+              weight: "1",
               weight_uom: "gr",
-              qty: "",
-              value: "",
-              width: "",
-              height: "",
-              length: "",
+              qty: "1",
+              value: "1",
+              width: "1",
+              height: "1",
+              length: "1",
               dimension_uom: "cm",
               item_type: "on",
             },
@@ -1313,7 +1345,11 @@ export default {
           return selectedProducts.indexOf(p.product_id) >= 0;
         })
         .map((p) => {
-          p.qty = 0;
+          if (p.optional === "Y") {
+            p.qty = 0;
+          } else {
+            p.qty = Number(p.min_stock);
+          }
 
           return p;
         });
@@ -1359,5 +1395,21 @@ export default {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.checkout-step {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 20px;
+  color: white;
+  height: 20px;
+  font-size: 0.75rem;
+  border-radius: 50%;
+  background-color: #d3ecfe;
+
+  &.active {
+    background-color: #1b9dfb;
+  }
 }
 </style>

@@ -83,9 +83,11 @@
               :key="i"
               v-html="additionalTab.content.replaceAll('\n', '<br />')"
             ></div>
-            <div class="tab-pane" id="tabs-hadiah-5">
-              {{ currentEvent.prize_description }}
-            </div>
+            <div
+              class="tab-pane"
+              id="tabs-hadiah-5"
+              v-html="currentEvent.prize_description.replaceAll('\n', '<br />')"
+            ></div>
 
             <div class="tab-pane page-wrapper" id="tabs-submit-5">
               <div class="page-body">

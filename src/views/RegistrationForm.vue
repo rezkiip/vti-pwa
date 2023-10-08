@@ -215,6 +215,7 @@
                     class="reg-form"
                     :data-id="regForm.template_id"
                     :data-question="regForm.question_type"
+                    @change="uploadFile($event)"
                   />
                   <label :for="`floating-file-upload-${k}`"
                     >{{ regForm.question }}
@@ -315,6 +316,16 @@ export default {
     };
   },
   methods: {
+    uploadFile(evt) {
+      // const file = evt.target.files || evt.dataTransfer.files;
+      // Vue.nextTick(() => {
+      //   for (const f of file) {
+      //     if (condition) {
+      //     }
+      //   }
+      // });
+      // console.log("file", file);
+    },
     async submit() {
       this.$func.loading();
       try {
